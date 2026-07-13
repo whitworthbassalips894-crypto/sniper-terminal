@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>狙击手战法 · 战术终端</title>
+
+<!-- PWA：让"添加到主屏幕"后有独立图标、全屏启动、状态栏配色 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0A0D10">
+<link rel="icon" href="favicon-32.png" sizes="32x32">
+
+<!-- iOS Safari 专属（iOS不读取manifest.json，得靠这几行才能有图标和全屏效果） -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="战术终端">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+    --bg: #0A0D10;
+    --bg-panel: #14181D;
+    --bg-panel-2: #1C2126;
+    --bg-input: #171B20;
+    --border: #262B31;
+    --border-bright: #383F47;
+    --amber: #FFA940;
+    --amber-dim: #3A2A16;
+    --green: #00C076;
+    --green-dim: #0E2B22;
+    --red: #F6465D;
+    --red-dim: #3A1620;
+    --blue: #4C8DFF;
+    --blue-dim: #16233D;
+    --text: #EAECEF;
+    --text-muted: #848E9C;
+    --text-dim: #5E6673;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --font-display: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(ellipse 1200px 600px at 50% -10%, #131820 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: var(--font-display);
+    min-height: 100vh;
+    position: relative;
+  }
+
+  .wrap{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+    position: relative;
+    z-index: 2;
+  }
+
+  header{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 22px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  header .title-block{ display:flex; align-items:center; gap:14px; }
+  header svg.logo{ width:42px; height:42px; flex-shrink:0; }
+  header h1{
+    font-size: 20px;
+    letter-spacing: -0.2px;
+    margin:0;
+    font-weight:700;
+    color: var(--text);
+  }
+  header p.sub{
+    margin:3px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .status-strip{
+    display:flex; align-items:center; gap:9px; font-size:13px; font-weight:500;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--border);
+    padding: 7px 14px;
+    border-radius: 999px;
+  }
+  .led{ width:8px; height:8px; border-radius:50%; background: var(--green); box-shadow: 0 0 6px var(--green); flex-shrink:0; }
+  .led.warn{ background: var(--red); box-shadow: 0 0 8px var(--red); animation: pulse 1.2s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce){ .led.warn{ animation:none; } }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+  .grid{
+    display:grid;
+    grid-template-columns: 380px 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 860px){
+    .grid{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  .panel h2{
+    font-size: 15px;
+    letter-spacing: 0;
+    margin: 0 0 16px;
+    color: var(--text);
+    font-weight: 700;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel h2 .idx{
+    font-size:11px;
+    font-weight:700;
+    color: var(--bg);
+    background: var(--green);
+    padding: 2px 7px;
+    border-radius: 5px;
+  }
+
+  .field{ margin-bottom: 12px; }
+  .field label{
+    display:block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .field input, .field select{
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    padding: 10px 12px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    transition: border-color .15s;
+  }
+  .field input:focus, .field select:focus, button:focus-visible{
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px var(--green-dim);
+  }
+  .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+  .divider{ height:1px; background: var(--border); margin: 18px 0; }
+  .sublabel{ font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:10px; }
+
+  button{
+    font-family: var(--font-display);
+    font-weight:600;
+    cursor:pointer;
+    border: 1px solid var(--border-bright);
+    border-radius: var(--radius-sm);
+    background: var(--bg-panel-2);
+    color: var(--text);
+    padding: 10px 14px;
+    font-size: 13px;
+    transition: background .15s, border-color .15s, transform .1s;
+  }
+  button:hover{ background: var(--bg-input); border-color: var(--text-dim); }
+  button:active{ transform: scale(0.98); }
+  .btn-primary{
+    width:100%;
+    background: var(--green);
+    color: #06120D;
+    border-color: var(--green);
+    padding: 13px 14px;
+    font-size:14px;
+    font-weight: 700;
+    margin-top: 6px;
+    border-radius: var(--radius-sm);
+  }
+  .btn-primary:hover{ background: #1DD98C; border-color: #1DD98C; }
+  .btn-primary:disabled{ opacity: 0.5; cursor: not-allowed; }
+  .btn-small{ padding: 6px 11px; font-size: 12px; }
+  .btn-danger{ color: var(--red); border-color: var(--red-dim); }
+  .btn-danger:hover{ background: var(--red-dim); border-color: var(--red); }
+
+  /* ---- Gauges ---- */
+  .gauge-row{ display:grid; grid-template-columns: 150px 1fr; gap: 20px; align-items:center; margin-bottom: 20px; }
+  @media (max-width:600px){ .gauge-row{ grid-template-columns: 1fr; } }
+  .legend{ font-size:13px; }
+  .legend div{ display:flex; justify-content:space-between; padding:7px 0; border-bottom: 1px solid var(--border); gap:10px;}
+  .legend div:last-child{ border-bottom: none; }
+  .legend .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:7px; }
+  .legend .lbl{ color:var(--text-muted); display:flex; align-items:center; font-weight:500; }
+  .legend .val{ color: var(--text); font-weight:700; font-variant-numeric: tabular-nums; }
+
+  .jbar-wrap{ margin-bottom: 6px; }
+  .jbar-track{
+    position:relative;
+    height: 10px;
+    background: var(--bg-input);
+    border-radius: 999px;
+    display:flex;
+    overflow: visible;
+  }
+  .jbar-seg{ height:100%; }
+  .jbar-seg:first-child{ border-radius: 999px 0 0 999px; }
+  .jbar-seg:last-child{ border-radius: 0 999px 999px 0; }
+  .jbar-marker{
+    position:absolute;
+    top:-5px;
+    width:4px;
+    height:20px;
+    border-radius: 2px;
+    background: var(--text);
+    box-shadow: 0 0 6px rgba(255,255,255,0.5);
+    transform: translateX(-2px);
+  }
+  .jbar-scale{ display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-top:8px; font-weight:500; }
+
+  /* ---- Result cards ---- */
+  .badge{
+    display:inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 7px;
+    border: none;
+  }
+  .badge.ok{ color: var(--green); background: var(--green-dim); }
+  .badge.warn{ color: var(--amber); background: var(--amber-dim); }
+  .badge.bad{ color: var(--red); background: var(--red-dim); }
+
+  .result-card{
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-panel-2);
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .result-card h3{
+    margin:0 0 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .result-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width:600px){ .result-grid{ grid-template-columns: 1fr; } }
+  .stat{ }
+  .stat .k{ font-size:12px; color:var(--text-muted); font-weight:500; }
+  .stat .v{ font-family: var(--font-mono); font-size: 17px; font-weight:700; margin-top:3px; font-variant-numeric: tabular-nums; }
+  .v.pos{ color: var(--red); }
+  .v.neg{ color: var(--green); }
+  .v.neu{ color: var(--text); }
+
+  .note{
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height:1.7;
+    margin-top: 12px;
+    padding-top:12px;
+    border-top: 1px solid var(--border);
+  }
+  .warn-banner{
+    background: var(--red-dim);
+    border: 1px solid rgba(246,70,93,0.35);
+    border-radius: var(--radius-sm);
+    color: #FFC9D1;
+    padding: 13px 15px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    line-height:1.6;
+    font-weight: 500;
+  }
+
+  /* ---- Log panel ---- */
+  .log-item{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap:10px;
+    padding: 10px 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 7px;
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+  .log-item.decayed{ border-color: rgba(246,70,93,0.4); }
+  .log-item .lname{ flex:1; min-width:100px; font-weight:500; }
+  .log-item .lcount{ color: var(--amber); min-width:56px; font-weight:600; font-variant-numeric: tabular-nums; }
+  .log-item.decayed .lcount{ color: var(--red); }
+  .log-actions{ display:flex; gap:6px; }
+
+  footer.disclaimer{
+    font-size: 11.5px;
+    color: var(--text-dim);
+    text-align:center;
+    line-height:1.8;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+
+  .empty-hint{ font-size:13px; color:var(--text-dim); font-style:normal; }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="title-block">
+      <svg class="logo" viewBox="0 0 40 40">
+        <rect width="40" height="40" rx="10" fill="#0E2B22"/>
+        <line x1="10" y1="7" x2="10" y2="30" stroke="#00C076" stroke-width="2" stroke-linecap="round"/>
+        <rect x="7" y="14" width="6" height="9" rx="1.5" fill="#00C076"/>
+        <line x1="20" y1="5" x2="20" y2="27" stroke="#F6465D" stroke-width="2" stroke-linecap="round"/>
+        <rect x="17" y="9" width="6" height="7" rx="1.5" fill="#F6465D"/>
+        <line x1="30" y1="3" x2="30" y2="33" stroke="#00C076" stroke-width="2" stroke-linecap="round"/>
+        <rect x="27" y="15" width="6" height="13" rx="1.5" fill="#00C076"/>
+      </svg>
+      <div>
+        <h1>战术终端</h1>
+        <p class="sub">狙击手战法 · 智能战术助手 v3.0</p>
+      </div>
+    </div>
+    <div class="status-strip">
+      <span class="led" id="cooldownLed"></span>
+      <span id="cooldownText">冷静期状态：正常</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT: INPUT -->
+    <div>
+      <div class="panel">
+        <h2><span class="idx">01</span> 战场参数录入</h2>
+        <div class="sublabel">实时行情接入（自动测算，可选）</div>
+        <div class="row2">
+          <div class="field">
+            <label for="symbolInput">交易币种</label>
+            <select id="symbolInput">
+              <option value="BTCUSDT" selected>BTC/USDT</option>
+              <option value="ETHUSDT">ETH/USDT</option>
+              <option value="SOLUSDT">SOL/USDT</option>
+              <option value="BNBUSDT">BNB/USDT</option>
+              <option value="XRPUSDT">XRP/USDT</option>
+              <option value="DOGEUSDT">DOGE/USDT</option>
+              <option value="ADAUSDT">ADA/USDT</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="intervalSelect">主周期</label>
+            <select id="intervalSelect">
+              <option value="15m">15分钟</option>
+              <option value="1h" selected>1小时</option>
+              <option value="4h">4小时</option>
+              <option value="1d">日线</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-primary" id="fetchBtn" type="button">拉取行情并自动计算指标</button>
+        <div class="note" id="fetchStatus" style="border:none; padding-top:8px;">
+          数据源：币安公开行情接口（无需密钥）。自动计算 EMA144/169/12 与 KDJ-J 值，并尝试自动判定成交量与多周期确认。若当前网页环境屏蔽了外部请求，请下载本文件后在浏览器中直接打开重试，或改用下方手动录入。
+        </div>
+
+        <div class="divider"></div>
+        <div class="sublabel">价格与均线结构（可自动填入，也可手动修改）</div>
+        <div class="field">
+          <label for="price">当前价格</label>
+          <input type="number" id="price" step="any" value="60250">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="ema144">EMA144</label>
+            <input type="number" id="ema144" step="any" value="59800">
+          </div>
+          <div class="field">
+            <label for="ema169">EMA169</label>
+            <input type="number" id="ema169" step="any" value="59600">
+          </div>
+        </div>
+        <div class="field">
+          <label for="ema12">EMA12（生死快线）</label>
+          <input type="number" id="ema12" step="any" value="61200">
+        </div>
+
+        <div class="divider"></div>
+        <div class="sublabel">情绪温度计</div>
+        <div class="field">
+          <label for="jval">KDJ - J 值</label>
+          <input type="number" id="jval" step="0.1" value="8.5">
+        </div>
+
+        <div class="divider"></div>
+        <div class="sublabel">判定容差</div>
+        <div class="row2">
+          <div class="field">
+            <label for="tolerance">关键位容差 %</label>
+            <input type="number" id="tolerance" step="0.1" value="2">
+          </div>
+          <div class="field">
+            <label for="stopbuf">止损缓冲 %</label>
+            <input type="number" id="stopbuf" step="0.1" value="1.5">
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="sublabel">确认层（交叉验证）</div>
+        <div class="field">
+          <label for="volConfirm">成交量确认</label>
+          <select id="volConfirm">
+            <option value="yes">是 — 信号伴随放量</option>
+            <option value="no">否 — 缩量</option>
+            <option value="unknown" selected>未知</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="mtfConfirm">多周期共振</label>
+          <select id="mtfConfirm">
+            <option value="yes">是 — 高周期结构一致</option>
+            <option value="no">否 — 高周期冲突</option>
+            <option value="unknown" selected>未知</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fundConfirm">资金面极端信号（可选）</label>
+          <select id="fundConfirm">
+            <option value="yes">是 — 费率/爆仓聚集极端</option>
+            <option value="no">否</option>
+            <option value="unknown" selected>未知</option>
+          </select>
+        </div>
+
+        <div class="divider"></div>
+        <div class="sublabel">v3.0 · 波动率与宏观结构</div>
+        <div class="field">
+          <label for="volState">波动率状态（ATR）</label>
+          <select id="volState">
+            <option value="normal" selected>正常</option>
+            <option value="low">历史低位（触发熔断）</option>
+            <option value="unknown">未知</option>
+          </select>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="macroRes">宏观阻力位（箱体顶/前高，选填）</label>
+            <input type="number" id="macroRes" step="any" placeholder="留空则不启用轻骑兵">
+          </div>
+          <div class="field">
+            <label for="macroSupport">宏观支撑位（箱体底/前低，选填）</label>
+            <input type="number" id="macroSupport" step="any" placeholder="留空则不启用轻骑兵">
+          </div>
+        </div>
+
+        <button class="btn-primary" id="analyzeBtn">生成作战指令</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: OUTPUT -->
+    <div>
+      <div class="panel">
+        <h2><span class="idx">02</span> 战场扫描</h2>
+        <div class="gauge-row">
+          <svg id="depthGauge" viewBox="0 0 150 300" style="width:100%; height:auto;"></svg>
+          <div class="legend" id="depthLegend"></div>
+        </div>
+
+        <div class="jbar-wrap">
+          <div class="sublabel">情绪温度计（J 值）</div>
+          <div class="jbar-track">
+            <div class="jbar-seg" style="width:10%; background:var(--blue-dim);"></div>
+            <div class="jbar-seg" style="width:80%; background:var(--bg-panel-2);"></div>
+            <div class="jbar-seg" style="width:10%; background:var(--red-dim);"></div>
+            <div class="jbar-marker" id="jMarker"></div>
+          </div>
+          <div class="jbar-scale">
+            <span>0（恐慌）</span><span>50</span><span>100（狂热）</span>
+          </div>
+        </div>
+        <div class="note" id="jReadout">等待输入…</div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="idx">03</span> 作战指令</h2>
+        <div id="resultArea">
+          <p class="empty-hint">录入左侧参数后点击「生成作战指令」。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOG PANEL -->
+  <div class="panel">
+    <h2><span class="idx">04</span> 战场日志</h2>
+
+    <div class="sublabel">连续止损计数器（心理防火墙）</div>
+    <div class="log-item" id="cooldownRow">
+      <span class="lname">连续止损次数</span>
+      <span class="lcount" id="cooldownCountText">0</span>
+      <div class="log-actions">
+        <button class="btn-small" id="addStopBtn">记录一次止损</button>
+        <button class="btn-small btn-danger" id="resetStopBtn">清零（止盈后重置）</button>
+      </div>
+    </div>
+    <p class="note" style="border:none; margin-top:6px; padding-top:0;">连续止损 ≥ 2 次将自动锁定新开仓建议，强制进入复盘冷静期。</p>
+
+    <div class="divider"></div>
+
+    <div class="sublabel">关键位测试记录（信号衰减机制）</div>
+    <div class="row2" style="margin-bottom:10px;">
+      <input type="text" id="levelLabel" placeholder="例如：58500 支撑" style="background:var(--bg-input); border:1px solid var(--border); color:var(--text); padding:9px 10px; font-family:var(--font-mono);">
+      <button id="addLevelBtn">新增并记一次测试</button>
+    </div>
+    <div id="levelList"></div>
+    <p class="note" style="border:none; margin-top:6px; padding-top:0;">同一价位测试 ≥ 3 次仍未突破/反转，标记为「钝化区」，系统不再建议以此位开新仓。</p>
+    <button class="btn-small btn-danger" id="resetAllBtn" style="margin-top:8px;">清空全部日志数据</button>
+  </div>
+
+  <footer class="disclaimer">
+    本终端所有判断基于技术结构推演，不构成投资建议。历史价格形态不保证未来重演，指挥官需保留独立判断并自行承担决策后果。<br>
+    冷静期计数与关键位日志仅保存在你本机的账号下，不对外可见。<br>
+    本工具为手动触发模式：需要你打开页面并点击按钮才会取数、计算、提示，不会在后台常驻监控或主动推送消息（v3.0补丁四暂未实现）。
+  </footer>
+
+</div>
+
+<script>
+// ---------- Utils ----------
+function fmt(n){
+  if(n===null || n===undefined || !isFinite(n)) return '--';
+  const a = Math.abs(n);
+  if(a >= 1000) return n.toLocaleString('en-US',{maximumFractionDigits:2});
+  if(a >= 1) return n.toFixed(2);
+  if(a >= 0.01) return n.toFixed(4);
+  return n.toFixed(6);
+}
+function pct(n){ return (n>=0?'+':'') + n.toFixed(2) + '%'; }
+function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+// ---------- Storage helpers ----------
+async function storageGet(key, fallback){
+  try{
+    const r = await window.storage.get(key, false);
+    return r ? JSON.parse(r.value) : fallback;
+  }catch(e){ return fallback; }
+}
+async function storageSet(key, value){
+  try{ await window.storage.set(key, JSON.stringify(value), false); }catch(e){ console.error('storage set failed', e); }
+}
+async function storageDelete(key){
+  try{ await window.storage.delete(key, false); }catch(e){ /* ignore */ }
+}
+
+let cooldownCount = 0;
+let levelLog = []; // [{id, label, tests}]
+
+// ---------- Depth Gauge (SVG) ----------
+function renderDepthGauge(price, ema144, ema169, ema12){
+  const svg = document.getElementById('depthGauge');
+  const tunnelHigh = Math.max(ema144, ema169);
+  const tunnelLow = Math.min(ema144, ema169);
+
+  const values = [price, tunnelHigh, tunnelLow, ema12];
+  const maxV = Math.max(...values);
+  const minV = Math.min(...values);
+  const range = (maxV - minV) || (maxV * 0.05) || 1;
+  const pad = range * 0.25;
+  const domainMax = maxV + pad;
+  const domainMin = minV - pad;
+  const top = 15, bottom = 285, usable = bottom - top;
+
+  function y(v){ return top + (domainMax - v) / (domainMax - domainMin) * usable; }
+
+  const yHigh = y(tunnelHigh), yLow = y(tunnelLow), yEma12 = y(ema12), yPrice = y(price);
+  const trackX = 45, trackW = 40;
+
+  let zoneBull = '', zoneBear = '';
+  if(yHigh > top) zoneBull = `<rect x="${trackX}" y="${top}" width="${trackW}" height="${yHigh-top}" fill="#F6465D" opacity="0.12"/>`;
+  if(bottom > yLow) zoneBear = `<rect x="${trackX}" y="${yLow}" width="${trackW}" height="${bottom-yLow}" fill="#00C076" opacity="0.12"/>`;
+
+  const priceColor = price > tunnelHigh ? '#F6465D' : (price < tunnelLow ? '#00C076' : '#FFA940');
+
+  svg.innerHTML = `
+    ${zoneBull}
+    <rect x="${trackX}" y="${top}" width="${trackW}" height="${bottom-top}" rx="6" fill="none" stroke="#262B31"/>
+    <rect x="${trackX}" y="${yHigh}" width="${trackW}" height="${Math.max(yLow-yHigh,1)}" fill="#4C8DFF" opacity="0.30"/>
+    ${zoneBear}
+    <line x1="20" y1="${yEma12}" x2="130" y2="${yEma12}" stroke="#4C8DFF" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <line x1="15" y1="${yPrice}" x2="135" y2="${yPrice}" stroke="${priceColor}" stroke-width="2"/>
+    <circle cx="65" cy="${yPrice}" r="6" fill="none" stroke="${priceColor}" stroke-width="2"/>
+    <line x1="59" y1="${yPrice}" x2="71" y2="${yPrice}" stroke="${priceColor}" stroke-width="1.5"/>
+    <line x1="65" y1="${yPrice-6}" x2="65" y2="${yPrice+6}" stroke="${priceColor}" stroke-width="1.5"/>
+  `;
+
+  const legend = document.getElementById('depthLegend');
+  const deviation = ((price - ema12) / ema12) * 100;
+  legend.innerHTML = `
+    <div><span class="lbl"><span class="dot" style="background:#F6465D"></span>隧道上沿</span><span class="val">${fmt(tunnelHigh)}</span></div>
+    <div><span class="lbl"><span class="dot" style="background:#00C076"></span>隧道下沿</span><span class="val">${fmt(tunnelLow)}</span></div>
+    <div><span class="lbl"><span class="dot" style="background:#4C8DFF"></span>EMA12</span><span class="val">${fmt(ema12)}</span></div>
+    <div><span class="lbl"><span class="dot" style="background:${priceColor}"></span>现价</span><span class="val">${fmt(price)}</span></div>
+    <div><span class="lbl">乖离率(vs EMA12)</span><span class="val">${pct(deviation)}</span></div>
+  `;
+}
+
+// ---------- J Bar ----------
+function renderJBar(j){
+  const marker = document.getElementById('jMarker');
+  const posPct = clamp(j, 0, 100);
+  marker.style.left = posPct + '%';
+  const readout = document.getElementById('jReadout');
+  let label, colorClass;
+  if(j < 10){ label = `极度恐慌（J = ${j}）— 情绪面超卖，关注做多反转`; colorClass='neg'; }
+  else if(j > 90){ label = `极度狂热（J = ${j}）— 情绪面超买，关注做空反转`; colorClass='pos'; }
+  else { label = `中性区间（J = ${j}）— 未达情绪极端，不构成独立信号`; colorClass='neu'; }
+  readout.innerHTML = `<span class="v ${colorClass}" style="font-family:var(--font-mono); font-size:13px;">${label}</span>`;
+}
+
+// ---------- Live data: fetch + indicator calculation ----------
+function average(arr){ return arr.reduce((a,b)=>a+b,0) / arr.length; }
+
+function computeEMASeries(closes, period){
+  if(closes.length < period) return null;
+  const k = 2/(period+1);
+  const ema = new Array(closes.length).fill(null);
+  let seed = average(closes.slice(0, period));
+  ema[period-1] = seed;
+  for(let i=period; i<closes.length; i++){
+    ema[i] = closes[i]*k + ema[i-1]*(1-k);
+  }
+  return ema;
+}
+
+function computeJSeries(highs, lows, closes, n){
+  n = n || 9;
+  const jArr = new Array(closes.length).fill(null);
+  let prevK = 50, prevD = 50;
+  for(let i=0; i<closes.length; i++){
+    if(i < n-1){ jArr[i] = 3*prevK - 2*prevD; continue; }
+    const hi = Math.max(...highs.slice(i-n+1, i+1));
+    const lo = Math.min(...lows.slice(i-n+1, i+1));
+    const rsv = (hi === lo) ? 50 : (closes[i]-lo)/(hi-lo)*100;
+    const k = prevK*(2/3) + rsv*(1/3);
+    const d = prevD*(2/3) + k*(1/3);
+    jArr[i] = 3*k - 2*d;
+    prevK = k; prevD = d;
+  }
+  return jArr;
+}
+
+async function fetchKlines(symbol, interval, limit){
+  const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error(`接口返回状态 ${res.status}`);
+  const data = await res.json();
+  if(!Array.isArray(data) || data.length === 0) throw new Error('未返回有效K线数据（交易对或周期可能不正确）');
+  return {
+    closes: data.map(k => parseFloat(k[4])),
+    highs: data.map(k => parseFloat(k[2])),
+    lows: data.map(k => parseFloat(k[3])),
+    vols: data.map(k => parseFloat(k[5])),
+  };
+}
+
+function structureOf(price, ema144, ema169){
+  const hi = Math.max(ema144, ema169), lo = Math.min(ema144, ema169);
+  if(price > hi) return 'bull';
+  if(price < lo) return 'bear';
+  return 'inside';
+}
+
+// ---- v3.0 补丁一：ATR 序列与历史分位数 ----
+function computeATRSeries(highs, lows, closes, period){
+  period = period || 14;
+  const trArr = new Array(closes.length).fill(null);
+  for(let i=1; i<closes.length; i++){
+    const tr = Math.max(
+      highs[i]-lows[i],
+      Math.abs(highs[i]-closes[i-1]),
+      Math.abs(lows[i]-closes[i-1])
+    );
+    trArr[i] = tr;
+  }
+  const atrArr = new Array(closes.length).fill(null);
+  for(let i=period; i<closes.length; i++){
+    let sum = 0;
+    for(let k=i-period+1; k<=i; k++) sum += trArr[k];
+    atrArr[i] = sum / period;
+  }
+  return atrArr;
+}
+
+function atrPercentile(atrArr, lookback){
+  lookback = lookback || 100;
+  const valid = atrArr.filter(v => v !== null);
+  if(valid.length < 20) return null;
+  const window = valid.slice(-lookback);
+  const latest = valid[valid.length-1];
+  const below = window.filter(v => v <= latest).length;
+  return (below / window.length) * 100;
+}
+
+const HIGHER_TF = { '15m':'1h', '1h':'4h', '4h':'1d', '1d':'1w' };
+
+async function runAutoFetch(){
+  const statusEl = document.getElementById('fetchStatus');
+  const btn = document.getElementById('fetchBtn');
+  const symbol = document.getElementById('symbolInput').value.trim().toUpperCase();
+  const interval = document.getElementById('intervalSelect').value;
+
+  if(!symbol){ statusEl.textContent = '请输入交易对，例如 BTCUSDT。'; return; }
+
+  btn.disabled = true;
+  statusEl.textContent = `正在拉取 ${symbol} / ${interval} 行情…`;
+
+  try{
+    const primary = await fetchKlines(symbol, interval, 500);
+    if(primary.closes.length < 170){
+      statusEl.textContent = `警告：仅获取到 ${primary.closes.length} 根K线，EMA169 冷启动偏差可能较大，仅供参考。`;
+    }
+
+    const ema12Series = computeEMASeries(primary.closes, 12);
+    const ema144Series = computeEMASeries(primary.closes, 144);
+    const ema169Series = computeEMASeries(primary.closes, 169);
+    const jSeries = computeJSeries(primary.highs, primary.lows, primary.closes, 9);
+
+    const lastIdx = primary.closes.length - 1;
+    const price = primary.closes[lastIdx];
+    const ema12 = ema12Series ? ema12Series[lastIdx] : null;
+    const ema144 = ema144Series ? ema144Series[lastIdx] : null;
+    const ema169 = ema169Series ? ema169Series[lastIdx] : null;
+    const j = jSeries[lastIdx];
+
+    if(ema12 === null || ema144 === null || ema169 === null){
+      throw new Error('K线数量不足以计算全部EMA周期，请更换更长的周期或稍后重试。');
+    }
+
+    document.getElementById('price').value = price;
+    document.getElementById('ema144').value = ema144.toFixed(6);
+    document.getElementById('ema169').value = ema169.toFixed(6);
+    document.getElementById('ema12').value = ema12.toFixed(6);
+    document.getElementById('jval').value = j.toFixed(2);
+
+    // Auto volume confirmation: last candle vs prior 20-candle average
+    let volNote = '成交量确认：数据不足，未自动判定。';
+    if(primary.vols.length >= 21){
+      const lastVol = primary.vols[primary.vols.length-1];
+      const avgVol = average(primary.vols.slice(-21, -1));
+      const volAuto = lastVol > avgVol * 1.2 ? 'yes' : 'no';
+      document.getElementById('volConfirm').value = volAuto;
+      volNote = `成交量确认：最新一根 ${(lastVol/avgVol).toFixed(2)}x 于前20根均量 → 自动判定为「${volAuto==='yes'?'是':'否'}」（可手动改）。`;
+    }
+
+    // Auto multi-timeframe confirmation
+    let mtfNote = '多周期共振：未能获取更高周期数据，未自动判定。';
+    const higherInterval = HIGHER_TF[interval];
+    if(higherInterval){
+      try{
+        const higher = await fetchKlines(symbol, higherInterval, 500);
+        const hEma144 = computeEMASeries(higher.closes, 144);
+        const hEma169 = computeEMASeries(higher.closes, 169);
+        const hLast = higher.closes.length - 1;
+        if(hEma144 && hEma169 && hEma144[hLast] !== null && hEma169[hLast] !== null){
+          const higherPrice = higher.closes[hLast];
+          const primaryStructure = structureOf(price, ema144, ema169);
+          const higherStructure = structureOf(higherPrice, hEma144[hLast], hEma169[hLast]);
+          let mtfAuto = 'unknown';
+          if(primaryStructure !== 'inside' && higherStructure !== 'inside'){
+            mtfAuto = (primaryStructure === higherStructure) ? 'yes' : 'no';
+          }
+          document.getElementById('mtfConfirm').value = mtfAuto;
+          mtfNote = `多周期共振（对照 ${higherInterval}）：主周期为「${primaryStructure}」，高周期为「${higherStructure}」→ 自动判定为「${mtfAuto==='yes'?'是':mtfAuto==='no'?'否':'未知'}」（可手动改）。`;
+        }
+      }catch(e){
+        mtfNote = `多周期共振：高周期数据获取失败（${e.message}），未自动判定。`;
+      }
+    }
+
+    // Auto funding rate as optional bonus confirmation (perpetual futures, best-effort)
+    let fundNote = '';
+    try{
+      const fRes = await fetch(`https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${symbol}`);
+      if(fRes.ok){
+        const fData = await fRes.json();
+        const rate = parseFloat(fData.lastFundingRate) * 100;
+        const fundAuto = Math.abs(rate) > 0.05 ? 'yes' : 'no';
+        document.getElementById('fundConfirm').value = fundAuto;
+        fundNote = ` 资金费率 ${rate.toFixed(4)}% → 自动判定资金面极端为「${fundAuto==='yes'?'是':'否'}」。`;
+      }
+    }catch(e){ /* funding is optional bonus, ignore failures silently */ }
+
+    // ---- v3.0 补丁一：ATR 波动率状态自动判定 ----
+    let atrNote = 'ATR：数据不足，未自动判定。';
+    const atrArr = computeATRSeries(primary.highs, primary.lows, primary.closes, 14);
+    const atrPct = atrPercentile(atrArr, 100);
+    if(atrPct !== null){
+      const volStateAuto = atrPct <= 20 ? 'low' : 'normal';
+      document.getElementById('volState').value = volStateAuto;
+      atrNote = `ATR历史分位：约第 ${atrPct.toFixed(0)} 百分位 → 自动判定波动率状态为「${volStateAuto==='low' ? '历史低位（熔断）' : '正常'}」（可手动改）。`;
+    }
+
+    // ---- v3.0 补丁二：宏观阻力/支撑位自动提取（取样本区间最高/最低，排除最近2根）----
+    let macroNote = '';
+    if(primary.highs.length > 20){
+      const sampleHighs = primary.highs.slice(0, -2);
+      const sampleLows = primary.lows.slice(0, -2);
+      const macroResAuto = Math.max(...sampleHighs);
+      const macroSupportAuto = Math.min(...sampleLows);
+      document.getElementById('macroRes').value = macroResAuto.toFixed(6);
+      document.getElementById('macroSupport').value = macroSupportAuto.toFixed(6);
+      macroNote = ` 宏观区间（近${primary.highs.length}根）：阻力 ${fmt(macroResAuto)} / 支撑 ${fmt(macroSupportAuto)}（已自动填入，仅供轻骑兵判断参考，建议人工核对是否为真正的长期箱体边界）。`;
+    }
+
+    // ---- v3.0 补丁三：订单薄流动性快照（单次快照，非持续监控）----
+    let liquidityNote = '';
+    try{
+      const depthRes = await fetch(`https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=100`);
+      if(depthRes.ok){
+        const depthData = await depthRes.json();
+        const band = 0.005; // 现价上下0.5%以内
+        const bidNotional = depthData.bids
+          .filter(b => parseFloat(b[0]) >= price*(1-band))
+          .reduce((s,b) => s + parseFloat(b[0])*parseFloat(b[1]), 0);
+        const askNotional = depthData.asks
+          .filter(a => parseFloat(a[0]) <= price*(1+band))
+          .reduce((s,a) => s + parseFloat(a[0])*parseFloat(a[1]), 0);
+        if(bidNotional > 0 && askNotional > 0){
+          const ratio = bidNotional / askNotional;
+          if(ratio < 0.4){
+            liquidityNote = ` ⚠ 订单薄快照：现价±0.5%内买盘明显薄于卖盘（比值${ratio.toFixed(2)}），若持有多头，止损滑点风险偏高（单次快照，非实时监控）。`;
+          } else if(ratio > 2.5){
+            liquidityNote = ` ⚠ 订单薄快照：现价±0.5%内卖盘明显薄于买盘（比值${ratio.toFixed(2)}），若持有空头，止损滑点风险偏高（单次快照，非实时监控）。`;
+          } else {
+            liquidityNote = ` 订单薄快照：现价附近买卖盘深度大致均衡（比值${ratio.toFixed(2)}）。`;
+          }
+        }
+      }
+    }catch(e){ /* liquidity snapshot is optional, ignore failures silently */ }
+
+    const now = new Date().toLocaleTimeString('zh-CN');
+    statusEl.innerHTML = `[${now}] ${symbol} / ${interval} 取数完成，已自动填入战场参数。<br>${volNote}<br>${mtfNote}${fundNote}<br>${atrNote}${macroNote}<br>${liquidityNote}<br>提醒：自动测算基于近500根K线，仍建议人工核对隧道位置与宏观关键位是否与你的图表一致。`;
+
+  }catch(err){
+    statusEl.innerHTML = `联网取数失败：${err.message}。<br>这通常是因为当前网页环境（Claude.ai 内嵌沙盒）限制了对外部接口的直接访问。可尝试：将本文件下载后在浏览器中直接打开重试；或改用下方手动录入。`;
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('fetchBtn').addEventListener('click', runAutoFetch);
+
+// ---------- Core Analysis (v3.0：ATR熔断 + 轻骑兵) ----------
+function analyze(inputs){
+  const { price, ema144, ema169, ema12, j, tolerance, stopBuf, vol, mtf, fund, cooldownActive, volState, macroRes, macroSupport } = inputs;
+  const tunnelHigh = Math.max(ema144, ema169);
+  const tunnelLow = Math.min(ema144, ema169);
+
+  let structureType, structureLabel;
+  if(price > tunnelHigh){ structureType='bull'; structureLabel='多头结构 — 价格位于隧道上方'; }
+  else if(price < tunnelLow){ structureType='bear'; structureLabel='空头结构 — 价格位于隧道下方'; }
+  else { structureType='inside'; structureLabel='隧道内部 — 趋势不明，震荡整理'; }
+
+  const distHighPct = Math.abs(price - tunnelHigh) / price * 100;
+  const distLowPct = Math.abs(price - tunnelLow) / price * 100;
+  const nearHigh = distHighPct <= tolerance;
+  const nearLow = distLowPct <= tolerance;
+
+  let jStatus = 'neutral';
+  if(j < 10) jStatus = 'fear';
+  else if(j > 90) jStatus = 'greed';
+
+  const result0 = { structureLabel, structureType, jStatus, opportunity:null, abandonReason:null, nextWatch:null, resonance:false, atrBlocked:false };
+
+  // ---- 补丁一：ATR 波动率熔断（一票否决，优先于一切判断）----
+  if(volState === 'low'){
+    result0.atrBlocked = true;
+    result0.signalLevel = 'ATR熔断（震荡绞肉过滤）';
+    result0.signalClass = 'bad';
+    result0.totalScore = 0;
+    result0.abandonReason = '当前ATR处于历史低位区间，判定为流动性枯竭 / 无效突破，按ATR熔断机制强制拒绝开仓（无论是否穿透隧道）。';
+    result0.nextWatch = 'ATR重新放大且价格有效站稳关键位后，再重新评估';
+    return result0;
+  }
+
+  let confirmScore = (vol==='yes'?1:0) + (mtf==='yes'?1:0);
+  const bonus = (fund==='yes') ? 1 : 0;
+
+  // ---- 补丁二：轻骑兵右侧突破试探（优先于常规回踩/反弹逻辑）----
+  let opportunity = null;
+  const hasMacroRes = macroRes && macroRes > 0;
+  const hasMacroSupport = macroSupport && macroSupport > 0;
+
+  if(hasMacroRes && price > macroRes && vol === 'yes' && jStatus === 'greed'){
+    opportunity = { kind:'breakout_long', reason:`放量突破宏观阻力位 ${fmt(macroRes)}，J值高位钝化（轻骑兵试探）` };
+  } else if(hasMacroSupport && price < macroSupport && vol === 'yes' && jStatus === 'fear'){
+    opportunity = { kind:'breakout_short', reason:`放量跌破宏观支撑位 ${fmt(macroSupport)}，J值低位钝化（轻骑兵试探）` };
+  } else if(structureType==='bull' && nearLow){
+    opportunity = { kind:'long', reason:'价格回踩隧道支撑区（顺势）' };
+  } else if(structureType==='bear' && nearHigh){
+    opportunity = { kind:'short', reason:'价格反弹至隧道阻力区（顺势）' };
+  } else if(jStatus==='fear'){
+    opportunity = { kind:'long_extreme', reason:'J 值极度恐慌，情绪面超卖（逆势接飞刀）' };
+  } else if(jStatus==='greed'){
+    opportunity = { kind:'short_extreme', reason:'J 值极度狂热，情绪面超买（逆势摸顶）' };
+  }
+
+  const isBreakout = opportunity && (opportunity.kind==='breakout_long' || opportunity.kind==='breakout_short');
+
+  const resonance = opportunity && !isBreakout && (
+    (opportunity.kind==='long' && jStatus==='fear') ||
+    (opportunity.kind==='short' && jStatus==='greed')
+  );
+  if(resonance) confirmScore += 1;
+  const totalScore = confirmScore + bonus;
+
+  let signalLevel, signalClass;
+  if(isBreakout){ signalLevel = '轻骑兵试探（固定小仓位）'; signalClass = 'warn'; }
+  else if(totalScore >= 2){ signalLevel = '有效信号'; signalClass='ok'; }
+  else if(totalScore === 1){ signalLevel = '观察级（仓位减半）'; signalClass='warn'; }
+  else { signalLevel = '信号不足（建议放弃）'; signalClass='bad'; }
+
+  const result = { ...result0, signalLevel, signalClass, totalScore, resonance };
+
+  if(!opportunity){
+    result.nextWatch = structureType==='inside'
+      ? `隧道上沿 ${fmt(tunnelHigh)} 或 隧道下沿 ${fmt(tunnelLow)}`
+      : (structureType==='bull' ? `隧道支撑区 ${fmt(tunnelLow)} - ${fmt(tunnelHigh)}` : `隧道阻力区 ${fmt(tunnelLow)} - ${fmt(tunnelHigh)}`);
+    return result;
+  }
+
+  if(!isBreakout && totalScore === 0){
+    result.abandonReason = '成交量与多周期确认均未通过，信号不足，按纪律放弃。';
+    result.nextWatch = `继续观察 ${fmt(tunnelLow)} - ${fmt(tunnelHigh)} 区间是否出现放量确认`;
+    return result;
+  }
+
+  let entryLow, entryHigh, stopPrice, targetNear, targetFar, direction, positionBase;
+
+  if(opportunity.kind === 'long'){
+    entryLow = tunnelLow * (1 - tolerance/100*0.3);
+    entryHigh = tunnelHigh * (1 + tolerance/100*0.3);
+    stopPrice = tunnelLow * (1 - stopBuf/100);
+    const entryMid = (entryLow+entryHigh)/2;
+    const risk = entryMid - stopPrice;
+    targetNear = ema12 > entryHigh ? ema12 : entryHigh + risk*1.5;
+    targetFar = entryMid + risk*2.5;
+    direction = '做多 LONG';
+    positionBase = resonance ? 40 : 30;
+    result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
+  } else if(opportunity.kind === 'short'){
+    entryLow = tunnelLow * (1 - tolerance/100*0.3);
+    entryHigh = tunnelHigh * (1 + tolerance/100*0.3);
+    stopPrice = tunnelHigh * (1 + stopBuf/100);
+    const entryMid = (entryLow+entryHigh)/2;
+    const risk = stopPrice - entryMid;
+    targetNear = ema12 < entryLow ? ema12 : entryLow - risk*1.5;
+    targetFar = entryMid - risk*2.5;
+    direction = '做空 SHORT';
+    positionBase = resonance ? 40 : 30;
+    result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
+  } else if(opportunity.kind === 'long_extreme'){
+    entryLow = price * (1 - tolerance/100*0.3);
+    entryHigh = price * (1 + tolerance/100*0.3);
+    stopPrice = price * (1 - stopBuf/100*1.5);
+    const entryMid = (entryLow+entryHigh)/2;
+    const risk = entryMid - stopPrice;
+    targetNear = ema12;
+    targetFar = ema12;
+    direction = '做多 LONG（极端接飞刀）';
+    positionBase = 15;
+    result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
+  } else if(opportunity.kind === 'short_extreme'){
+    entryLow = price * (1 - tolerance/100*0.3);
+    entryHigh = price * (1 + tolerance/100*0.3);
+    stopPrice = price * (1 + stopBuf/100*1.5);
+    const entryMid = (entryLow+entryHigh)/2;
+    const risk = stopPrice - entryMid;
+    targetNear = ema12;
+    targetFar = ema12;
+    direction = '做空 SHORT（极端摸顶）';
+    positionBase = 15;
+    result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
+  } else if(opportunity.kind === 'breakout_long'){
+    entryLow = price * (1 - 0.15/100);
+    entryHigh = price * (1 + 0.5/100);
+    stopPrice = macroRes * (1 - stopBuf/100);
+    const entryMid = (entryLow+entryHigh)/2;
+    const risk = entryMid - stopPrice;
+    targetNear = entryMid + risk*2;
+    targetFar = entryMid + risk*3.5;
+    direction = '做多 LONG（轻骑兵突破追单）';
+    positionBase = bonus ? 1 : 0.5;
+    result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
+  } else {
+    entryLow = price * (1 - 0.5/100);
+    entryHigh = price * (1 + 0.15/100);
+    stopPrice = macroSupport * (1 + stopBuf/100);
+    const entryMid = (entryLow+entryHigh)/2;
+    const risk = stopPrice - entryMid;
+    targetNear = entryMid - risk*2;
+    targetFar = entryMid - risk*3.5;
+    direction = '做空 SHORT（轻骑兵破位追单）';
+    positionBase = bonus ? 1 : 0.5;
+    result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
+  }
+
+  const isLong = direction.indexOf('LONG') !== -1;
+  const potential = isLong ? (result._targetForRR - result._entryMid) : (result._entryMid - result._targetForRR);
+  const risk = result._risk;
+  const rr = risk > 0 ? (potential / risk) : 0;
+
+  if(rr < 1.5){
+    result.abandonReason = `盈亏比不足 1.5（当前约 ${rr.toFixed(2)}），按纪律放弃该机会。`;
+    result.nextWatch = `等待价格进一步靠近关键位以改善盈亏比，或等待新的结构信号`;
+    return result;
+  }
+
+  let position = positionBase;
+  if(!isBreakout && signalLevel.indexOf('观察级') !== -1) position = position / 2;
+  let forcedZero = false;
+  if(cooldownActive){ position = 0; forcedZero = true; }
+
+  result.opportunity = {
+    kind: opportunity.kind, reason: opportunity.reason, direction, isBreakout,
+    entryLow, entryHigh, stopPrice, targetNear, targetFar,
+    rr, position, forcedZero
+  };
+  return result;
+}
+
+// ---------- Render Result ----------
+function renderResult(r, cooldownActive){
+  const area = document.getElementById('resultArea');
+  let html = '';
+
+  if(cooldownActive){
+    html += `<div class="warn-banner">⚠ 连续止损预警：当前处于冷静期。系统建议暂停开新仓，优先复盘而非加码。下方所有仓位建议已被强制归零。</div>`;
+  }
+
+  html += `<div class="result-card">
+    <h3>定性</h3>
+    <p style="margin:0 0 8px; font-size:14px;">${r.structureLabel}</p>
+    <span class="badge ${r.signalClass}">${r.signalLevel}</span>
+    ${r.resonance ? '<span class="badge ok" style="margin-left:8px;">结构+情绪共振</span>' : ''}
+  </div>`;
+
+  if(!r.opportunity){
+    html += `<div class="result-card">
+      <h3>作战指令</h3>
+      <span class="badge warn">空仓观望</span>
+      <p class="note" style="border:none; padding-top:8px;">
+        ${r.abandonReason ? r.abandonReason : '当前价格未触及关键结构位，也无情绪极端信号，不构成开仓条件。'}<br>
+        下一预警点位：<strong>${r.nextWatch || '—'}</strong>
+      </p>
+    </div>`;
+  } else {
+    const o = r.opportunity;
+    html += `<div class="result-card">
+      <h3>作战指令 — ${o.direction}</h3>
+      ${o.isBreakout ? '<span class="badge warn" style="margin-bottom:10px; display:inline-block;">轻骑兵战术 · 特例允许市价</span>' : ''}
+      <p style="font-size:12px; color:var(--text-muted); margin:0 0 10px;">触发理由：${o.reason}</p>
+      <div class="result-grid">
+        <div class="stat"><div class="k">${o.isBreakout ? '追入区间（市价容忍带）' : '入场区间'}</div><div class="v neu">${fmt(o.entryLow)} ~ ${fmt(o.entryHigh)}</div></div>
+        <div class="stat"><div class="k">铁血止损位</div><div class="v neg">${fmt(o.stopPrice)}</div></div>
+        <div class="stat"><div class="k">${o.isBreakout ? '止盈近目标' : '止盈近目标（EMA12/首目标）'}</div><div class="v pos">${fmt(o.targetNear)}</div></div>
+        <div class="stat"><div class="k">止盈远目标</div><div class="v pos">${fmt(o.targetFar)}</div></div>
+        <div class="stat"><div class="k">盈亏比</div><div class="v ${o.rr>=1.5?'pos':'neg'}">${o.rr.toFixed(2)} : 1</div></div>
+        <div class="stat"><div class="k">推荐仓位</div><div class="v neu">${o.forcedZero ? '0%（冷静期锁定）' : o.position + '%'}</div></div>
+      </div>
+      <p class="note">
+        ${o.isBreakout
+          ? '本次为轻骑兵试探，系统唯一允许市价直接追入的场景，仓位已强制压缩至0.5%-1%。跌破止损位无条件离场；若后续价格回踩隧道确认，可再按标准仓位规则加仓「重兵」。'
+          : '限价挂单执行，禁止市价追单。跌破止损位无条件离场，不扛单、不加仓摊平。'}<br>
+        若该关键位在下方【战场日志】中已记录 ≥ 3 次测试，请自动降级为观察，本次不建议开新仓。
+      </p>
+    </div>`;
+  }
+
+  area.innerHTML = html;
+}
+
+// ---------- Wire up main analyze button ----------
+document.getElementById('analyzeBtn').addEventListener('click', () => {
+  const price = parseFloat(document.getElementById('price').value);
+  const ema144 = parseFloat(document.getElementById('ema144').value);
+  const ema169 = parseFloat(document.getElementById('ema169').value);
+  const ema12 = parseFloat(document.getElementById('ema12').value);
+  const j = parseFloat(document.getElementById('jval').value);
+  const tolerance = parseFloat(document.getElementById('tolerance').value) || 2;
+  const stopBuf = parseFloat(document.getElementById('stopbuf').value) || 1.5;
+  const vol = document.getElementById('volConfirm').value;
+  const mtf = document.getElementById('mtfConfirm').value;
+  const fund = document.getElementById('fundConfirm').value;
+  const volState = document.getElementById('volState').value;
+  const macroRes = parseFloat(document.getElementById('macroRes').value) || 0;
+  const macroSupport = parseFloat(document.getElementById('macroSupport').value) || 0;
+
+  if([price, ema144, ema169, ema12, j].some(v => isNaN(v))){
+    document.getElementById('resultArea').innerHTML = '<p class="empty-hint" style="color:var(--red);">请检查左侧参数，所有数值字段均需填写。</p>';
+    return;
+  }
+
+  renderDepthGauge(price, ema144, ema169, ema12);
+  renderJBar(j);
+
+  const cooldownActive = cooldownCount >= 2;
+  const r = analyze({price, ema144, ema169, ema12, j, tolerance, stopBuf, vol, mtf, fund, cooldownActive, volState, macroRes, macroSupport});
+  renderResult(r, cooldownActive);
+});
+
+// ---------- Cooldown tracker ----------
+function renderCooldown(){
+  document.getElementById('cooldownCountText').textContent = cooldownCount;
+  const led = document.getElementById('cooldownLed');
+  const text = document.getElementById('cooldownText');
+  if(cooldownCount >= 2){
+    led.classList.add('warn');
+    text.textContent = '冷静期状态：锁定新开仓';
+  } else {
+    led.classList.remove('warn');
+    text.textContent = '冷静期状态：正常';
+  }
+}
+
+document.getElementById('addStopBtn').addEventListener('click', async () => {
+  cooldownCount += 1;
+  await storageSet('cooldown-count', cooldownCount);
+  renderCooldown();
+});
+document.getElementById('resetStopBtn').addEventListener('click', async () => {
+  cooldownCount = 0;
+  await storageSet('cooldown-count', cooldownCount);
+  renderCooldown();
+});
+
+// ---------- Level decay log ----------
+function renderLevelLog(){
+  const container = document.getElementById('levelList');
+  if(levelLog.length === 0){
+    container.innerHTML = '<p class="empty-hint">暂无记录的关键位。</p>';
+    return;
+  }
+  container.innerHTML = levelLog.map(item => {
+    const decayed = item.tests >= 3;
+    return `<div class="log-item ${decayed ? 'decayed' : ''}">
+      <span class="lname">${item.label}${decayed ? ' — 钝化区' : ''}</span>
+      <span class="lcount">${item.tests} 次测试</span>
+      <div class="log-actions">
+        <button class="btn-small" data-action="test" data-id="${item.id}">+1 测试</button>
+        <button class="btn-small btn-danger" data-action="delete" data-id="${item.id}">删除</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('button[data-action]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      const action = btn.getAttribute('data-action');
+      if(action === 'test'){
+        const item = levelLog.find(l => l.id === id);
+        if(item) item.tests += 1;
+      } else if(action === 'delete'){
+        levelLog = levelLog.filter(l => l.id !== id);
+      }
+      await storageSet('level-log', levelLog);
+      renderLevelLog();
+    });
+  });
+}
+
+document.getElementById('addLevelBtn').addEventListener('click', async () => {
+  const input = document.getElementById('levelLabel');
+  const label = input.value.trim();
+  if(!label) return;
+  levelLog.push({ id: 'lv_' + Date.now(), label, tests: 1 });
+  input.value = '';
+  await storageSet('level-log', levelLog);
+  renderLevelLog();
+});
+
+document.getElementById('resetAllBtn').addEventListener('click', async () => {
+  cooldownCount = 0;
+  levelLog = [];
+  await storageDelete('cooldown-count');
+  await storageDelete('level-log');
+  renderCooldown();
+  renderLevelLog();
+});
+
+// ---------- Init ----------
+(async function init(){
+  cooldownCount = await storageGet('cooldown-count', 0);
+  levelLog = await storageGet('level-log', []);
+  renderCooldown();
+  renderLevelLog();
+  // initial demo render
+  renderDepthGauge(60250, 59800, 59600, 61200);
+  renderJBar(8.5);
+})();
+</script>
+
+<script>
+// ---------- PWA: 注册 Service Worker ----------
+// 只有通过 https（或 GitHub Pages）打开时才会生效；直接打开本地文件(file://)时
+// 浏览器会拒绝注册，这是浏览器的安全限制，不是代码写错了。
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch((err) => {
+      console.log('Service Worker 注册失败（不影响正常使用）：', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
