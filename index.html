@@ -457,6 +457,14 @@
             <option value="unknown">未知</option>
           </select>
         </div>
+        <div class="field">
+          <label for="trendState">趋势效率状态（补丁五 · ER）</label>
+          <select id="trendState">
+            <option value="normal" selected>正常</option>
+            <option value="low">效率不足（横盘绞肉，即使ATR不低也拒绝）</option>
+            <option value="unknown">未知</option>
+          </select>
+        </div>
         <div class="row2">
           <div class="field">
             <label for="macroRes">宏观阻力位（箱体顶/前高，选填）</label>
@@ -716,6 +724,17 @@ function atrPercentile(atrArr, lookback){
   return (below / window.length) * 100;
 }
 
+// ---- v3.0 补丁五：趋势效率比（净位移/总路径长度，专门补上ATR测不到"有没有方向"这个盲区）----
+function efficiencyRatio(closes, n){
+  n = n || 10;
+  if(closes.length < n + 1) return null;
+  const idx = closes.length - 1;
+  const netChange = Math.abs(closes[idx] - closes[idx-n]);
+  let pathLength = 0;
+  for(let k=idx-n+1; k<=idx; k++) pathLength += Math.abs(closes[k] - closes[k-1]);
+  return pathLength > 0 ? netChange / pathLength : null;
+}
+
 const HIGHER_TF = { '15m':'1h', '1h':'4h', '4h':'1d', '1d':'1w' };
 
 async function runAutoFetch(){
@@ -815,6 +834,15 @@ async function runAutoFetch(){
       atrNote = `ATR历史分位：约第 ${atrPct.toFixed(0)} 百分位 → 自动判定波动率状态为「${volStateAuto==='low' ? '历史低位（熔断）' : '正常'}」（可手动改）。`;
     }
 
+    // ---- v3.0 补丁五：趋势效率状态自动判定（ATR测不到"有没有方向"，这里补上）----
+    let erNote = 'ER：数据不足，未自动判定。';
+    const erVal = efficiencyRatio(primary.closes, 10);
+    if(erVal !== null){
+      const trendStateAuto = erVal < 0.3 ? 'low' : 'normal';
+      document.getElementById('trendState').value = trendStateAuto;
+      erNote = `趋势效率比：${erVal.toFixed(2)} → 自动判定为「${trendStateAuto==='low' ? '效率不足（横盘绞肉）' : '正常'}」（可手动改）。`;
+    }
+
     // ---- v3.0 补丁二：宏观阻力/支撑位自动提取（取样本区间最高/最低，排除最近2根）----
     let macroNote = '';
     if(primary.highs.length > 20){
@@ -854,7 +882,7 @@ async function runAutoFetch(){
     }catch(e){ /* liquidity snapshot is optional, ignore failures silently */ }
 
     const now = new Date().toLocaleTimeString('zh-CN');
-    statusEl.innerHTML = `[${now}] ${symbol} / ${interval} 取数完成，已自动填入战场参数。<br>${volNote}<br>${mtfNote}${fundNote}<br>${atrNote}${macroNote}<br>${liquidityNote}<br>提醒：自动测算基于近500根K线，仍建议人工核对隧道位置与宏观关键位是否与你的图表一致。`;
+    statusEl.innerHTML = `[${now}] ${symbol} / ${interval} 取数完成，已自动填入战场参数。<br>${volNote}<br>${mtfNote}${fundNote}<br>${atrNote}<br>${erNote}${macroNote}<br>${liquidityNote}<br>提醒：自动测算基于近500根K线，仍建议人工核对隧道位置与宏观关键位是否与你的图表一致。`;
 
   }catch(err){
     statusEl.innerHTML = `联网取数失败：${err.message}。<br>这通常是因为当前网页环境（Claude.ai 内嵌沙盒）限制了对外部接口的直接访问。可尝试：将本文件下载后在浏览器中直接打开重试；或改用下方手动录入。`;
@@ -867,7 +895,7 @@ document.getElementById('fetchBtn').addEventListener('click', runAutoFetch);
 
 // ---------- Core Analysis (v3.0：ATR熔断 + 轻骑兵) ----------
 function analyze(inputs){
-  const { price, ema144, ema169, ema12, j, tolerance, stopBuf, vol, mtf, fund, cooldownActive, volState, macroRes, macroSupport } = inputs;
+  const { price, ema144, ema169, ema12, j, tolerance, stopBuf, vol, mtf, fund, cooldownActive, volState, trendState, macroRes, macroSupport } = inputs;
   const tunnelHigh = Math.max(ema144, ema169);
   const tunnelLow = Math.min(ema144, ema169);
 
@@ -910,9 +938,9 @@ function analyze(inputs){
     opportunity = { kind:'breakout_long', reason:`放量突破宏观阻力位 ${fmt(macroRes)}，J值高位钝化（轻骑兵试探）` };
   } else if(hasMacroSupport && price < macroSupport && vol === 'yes' && jStatus === 'fear'){
     opportunity = { kind:'breakout_short', reason:`放量跌破宏观支撑位 ${fmt(macroSupport)}，J值低位钝化（轻骑兵试探）` };
-  } else if(structureType==='bull' && nearLow){
+  } else if(structureType==='bull' && nearHigh){
     opportunity = { kind:'long', reason:'价格回踩隧道支撑区（顺势）' };
-  } else if(structureType==='bear' && nearHigh){
+  } else if(structureType==='bear' && nearLow){
     opportunity = { kind:'short', reason:'价格反弹至隧道阻力区（顺势）' };
   } else if(jStatus==='fear'){
     opportunity = { kind:'long_extreme', reason:'J 值极度恐慌，情绪面超卖（逆势接飞刀）' };
@@ -921,6 +949,17 @@ function analyze(inputs){
   }
 
   const isBreakout = opportunity && (opportunity.kind==='breakout_long' || opportunity.kind==='breakout_short');
+  const isPullback = opportunity && (opportunity.kind==='long' || opportunity.kind==='short');
+
+  // ---- 补丁五：趋势效率过滤（只作用于隧道结构性回踩/反弹，不影响轻骑兵/极端反转）----
+  if(isPullback && trendState === 'low'){
+    result0.opportunity = null;
+    result0.signalLevel = '趋势效率不足（横盘绞肉过滤）';
+    result0.signalClass = 'bad';
+    result0.abandonReason = '趋势效率比低于阈值，即使ATR不低，也判定当前是来回插针的横盘而非真实方向，拒绝开仓。';
+    result0.nextWatch = '效率比重新回升、价格有效站稳关键位后，再重新评估';
+    return result0;
+  }
 
   const resonance = opportunity && !isBreakout && (
     (opportunity.kind==='long' && jStatus==='fear') ||
@@ -1108,6 +1147,7 @@ document.getElementById('analyzeBtn').addEventListener('click', () => {
   const mtf = document.getElementById('mtfConfirm').value;
   const fund = document.getElementById('fundConfirm').value;
   const volState = document.getElementById('volState').value;
+  const trendState = document.getElementById('trendState').value;
   const macroRes = parseFloat(document.getElementById('macroRes').value) || 0;
   const macroSupport = parseFloat(document.getElementById('macroSupport').value) || 0;
 
@@ -1120,7 +1160,7 @@ document.getElementById('analyzeBtn').addEventListener('click', () => {
   renderJBar(j);
 
   const cooldownActive = cooldownCount >= 2;
-  const r = analyze({price, ema144, ema169, ema12, j, tolerance, stopBuf, vol, mtf, fund, cooldownActive, volState, macroRes, macroSupport});
+  const r = analyze({price, ema144, ema169, ema12, j, tolerance, stopBuf, vol, mtf, fund, cooldownActive, volState, trendState, macroRes, macroSupport});
   renderResult(r, cooldownActive);
 });
 
