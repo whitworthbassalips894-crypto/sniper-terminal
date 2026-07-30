@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>狙击手战法 · 战术终端 v4.2</title>
+<title>狙击手战法 · 战术终端 v5.0 稳健偏进取</title>
 
 <!-- PWA：让"添加到主屏幕"后有独立图标、全屏启动、状态栏配色 -->
 <link rel="manifest" href="manifest.json">
@@ -369,7 +369,7 @@
       </svg>
       <div>
         <h1>战术终端</h1>
-        <p class="sub">狙击手战法 · 研究与执行终端 v4.2</p>
+        <p class="sub">狙击手战法 · 研究与执行终端 v5.0 稳健偏进取 · ETH优选</p>
       </div>
     </div>
     <div class="status-strip">
@@ -399,8 +399,8 @@
           <div class="field">
             <label for="symbolInput">交易币种</label>
             <select id="symbolInput">
-              <option value="BTC-USDT" selected>BTC/USDT</option>
-              <option value="ETH-USDT">ETH/USDT</option>
+              <option value="BTC-USDT">BTC/USDT</option>
+              <option value="ETH-USDT" selected>ETH/USDT</option>
               <option value="SOL-USDT">SOL/USDT</option>
               <option value="BNB-USDT">BNB/USDT</option>
               <option value="XRP-USDT">XRP/USDT</option>
@@ -455,12 +455,12 @@
         <div class="sublabel">判定容差</div>
         <div class="row2">
           <div class="field">
-            <label for="tolerance">关键位容差 %</label>
-            <input type="number" id="tolerance" step="0.1" value="2">
+            <label for="tolerance">关键位容差 % (v5.0 1.5%)</label>
+            <input type="number" id="tolerance" step="0.1" value="1.5">
           </div>
           <div class="field">
-            <label for="stopbuf">止损缓冲 %</label>
-            <input type="number" id="stopbuf" step="0.1" value="1.5">
+            <label for="stopbuf">止损缓冲 % (v5.0 1.2%)</label>
+            <input type="number" id="stopbuf" step="0.1" value="1.2">
           </div>
         </div>
 
@@ -468,9 +468,9 @@
         <div class="sublabel">账户与风险预算（用于计算虚拟计划）</div>
         <div class="row2">
           <div class="field"><label for="accountSize">研究账户（USDT）</label><input type="number" id="accountSize" min="1" step="1" value="1000"></div>
-          <div class="field"><label for="riskPct">单笔止损风险 %</label><input type="number" id="riskPct" min="0.1" max="2" step="0.1" value="1"></div>
+          <div class="field"><label for="riskPct">单笔止损风险 % (v5.0 1.5%)</label><input type="number" id="riskPct" min="0.1" max="2" step="0.1" value="1.5"></div>
         </div>
-        <div class="field"><label for="leverage">计划杠杆上限（仅计算保证金占用）</label><input type="number" id="leverage" min="1" max="10" step="1" value="3"></div>
+        <div class="field"><label for="leverage">计划杠杆上限 (v5.0 4x)</label><input type="number" id="leverage" min="1" max="10" step="1" value="4"></div>
         <div class="note" style="border:none;padding-top:0;margin-top:-2px;">风险预算 = 账户 × 风险% × 信号权重占比。系统按"入场价至止损价"的真实距离反推数量；杠杆不会放大这笔预设止损金额，只影响占用的保证金。信号权重越低（如"观察级"），实际冒的风险也会同比例调低，不再是固定不变的。</div>
 
         <div class="divider"></div>
@@ -608,7 +608,7 @@
   <footer class="disclaimer">
     本终端所有判断基于技术结构推演，不构成投资建议。历史价格形态不保证未来重演，指挥官需保留独立判断并自行承担决策后果。<br>
     冷静期计数与关键位日志仅保存在你本机的账号下，不对外可见。<br>
-    v4.2 为手动研究模式：仅在你点击拉取后读取行情，正式信号自动剔除正在形成的最后一根K线；不连接交易所、不下单、不在后台常驻监控。
+    v5.0 稳健偏进取为手动研究模式：默认ETH 1H，容差1.5%止损1.2% ATR50 ER0.25 风险1.5%杠杆4x，已同步机器人；仅点击拉取后读取行情，不连接交易所、不下单。
   </footer>
 
 </div>
@@ -927,7 +927,7 @@ async function runAutoFetch(){
     const atrArr = computeATRSeries(primary.highs, primary.lows, primary.closes, 14);
     const atrPct = atrPercentile(atrArr, 100);
     if(atrPct !== null){
-      const volStateAuto = atrPct <= 20 ? 'low' : 'normal';
+      const volStateAuto = atrPct <= 50 ? 'low' : 'normal'; // v5.0 50%
       document.getElementById('volState').value = volStateAuto;
       atrNote = `ATR历史分位：约第 ${atrPct.toFixed(0)} 百分位 → 自动判定波动率状态为「${volStateAuto==='low' ? '历史低位（熔断）' : '正常'}」（可手动改）。`;
     }
@@ -936,7 +936,7 @@ async function runAutoFetch(){
     let erNote = 'ER：数据不足，未自动判定。';
     const erVal = efficiencyRatio(primary.closes, 10);
     if(erVal !== null){
-      const trendStateAuto = erVal < 0.3 ? 'low' : 'normal';
+      const trendStateAuto = erVal < 0.25 ? 'low' : 'normal'; // v5.0 0.25
       document.getElementById('trendState').value = trendStateAuto;
       erNote = `趋势效率比：${erVal.toFixed(2)} → 自动判定为「${trendStateAuto==='low' ? '效率不足（横盘绞肉）' : '正常'}」（可手动改）。`;
     }
@@ -1510,5 +1510,5 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   });
 }
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a23377e048b55937',t:'MTc4NTQwNTEyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
