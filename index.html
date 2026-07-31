@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>狙击手战法 · 战术终端 v5.0 稳健偏进取</title>
+<title>狙击手战法 · 战术终端</title>
 
 <!-- PWA：让"添加到主屏幕"后有独立图标、全屏启动、状态栏配色 -->
 <link rel="manifest" href="manifest.json">
@@ -262,6 +262,9 @@
   .stat{ }
   .stat .k{ font-size:12px; color:var(--text-muted); font-weight:500; }
   .stat .v{ font-family: var(--font-mono); font-size: 17px; font-weight:700; margin-top:3px; font-variant-numeric: tabular-nums; }
+
+  .r-k{ font-size:11px; color:var(--text-muted); font-weight:500; text-transform:uppercase; letter-spacing:0.5px; }
+  .r-v{ font-family: var(--font-mono); font-size: 15px; font-weight:700; margin-top:3px; color:var(--text); font-variant-numeric: tabular-nums; }
   .v.pos{ color: var(--red); }
   .v.neg{ color: var(--green); }
   .v.neu{ color: var(--text); }
@@ -318,39 +321,6 @@
 
   .empty-hint{ font-size:13px; color:var(--text-dim); font-style:normal; }
 
-
-  /* ---- v4 command dashboard ---- */
-  .command-dashboard{ display:grid; grid-template-columns:1.25fr repeat(3,1fr); gap:12px; margin:0 0 18px; }
-  .command-card{ background:linear-gradient(145deg,var(--bg-panel-2),var(--bg-panel)); border:1px solid var(--border); border-radius:var(--radius); padding:15px; min-height:106px; }
-  .command-card.primary{ border-color:rgba(0,192,118,.36); background:linear-gradient(145deg,#10261e,var(--bg-panel)); }
-  .command-card .eyebrow{ color:var(--text-dim); font-size:10px; letter-spacing:.08em; text-transform:uppercase; font-weight:800; }
-  .command-card .big{ margin-top:8px; color:var(--text); font-size:16px; line-height:1.28; font-weight:750; }
-  .command-card .meta{ margin-top:7px; color:var(--text-muted); font-size:11.5px; line-height:1.45; }
-  .command-card .state-good{ color:var(--green); }.command-card .state-warn{color:var(--amber);}.command-card .state-bad{color:var(--red);}
-  .strategy-deck{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:16px; }
-  .strategy-chip{ border:1px solid var(--border); border-radius:var(--radius-sm); padding:11px; background:var(--bg-input); }
-  .strategy-chip .name{font-size:12px; font-weight:700;}.strategy-chip .status{font-size:11px; color:var(--text-muted); margin-top:5px;}
-  .strategy-chip.active{border-color:rgba(0,192,118,.5);}.strategy-chip.active .status{color:var(--green);}
-  .strategy-chip.blocked{border-color:rgba(246,70,93,.36);}.strategy-chip.blocked .status{color:var(--red);}
-  .risk-mini{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
-  .risk-mini > div{ background:var(--bg-input); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border); }
-  .risk-mini .r-k{font-size:10px;color:var(--text-dim);}.risk-mini .r-v{font-size:13px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;}
-  .data-seal{font-size:11px; color:var(--amber); margin-top:7px;}
-  @media(max-width:860px){.command-dashboard{grid-template-columns:repeat(2,1fr)}.command-card.primary{grid-column:span 2}} 
-  @media(max-width:540px){.command-dashboard,.strategy-deck{grid-template-columns:1fr}.command-card.primary{grid-column:auto}.risk-mini{grid-template-columns:1fr 1fr}}
-
-
-  /* ---- v4.1 virtual evidence ledger ---- */
-  .ledger-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-  .ledger-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
-  .ledger-metric{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px}
-  .ledger-metric .lm-k{font-size:10px;color:var(--text-dim);font-weight:700;letter-spacing:.04em}.ledger-metric .lm-v{font-size:15px;font-weight:750;margin-top:5px;font-variant-numeric:tabular-nums}
-  .trade-card{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px;margin-bottom:9px}
-  .trade-card.open{border-color:rgba(255,169,64,.45)}.trade-card.done{border-color:rgba(0,192,118,.3)}
-  .trade-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.trade-title{font-size:13px;font-weight:700}.trade-meta{font-size:11px;color:var(--text-muted);margin-top:7px;line-height:1.55}.trade-actions{display:flex;gap:7px;align-items:center;margin-top:10px;flex-wrap:wrap}.exit-input{width:130px;background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:7px 8px;font-family:var(--font-mono)}
-  .btn-ledger{background:var(--blue-dim);border-color:#294878;color:#AFCBFF}.btn-ledger:hover{background:#20355a;border-color:var(--blue)}
-  @media(max-width:720px){.ledger-metrics{grid-template-columns:repeat(2,1fr)}}
-
 </style>
 </head>
 <body>
@@ -369,7 +339,7 @@
       </svg>
       <div>
         <h1>战术终端</h1>
-        <p class="sub">狙击手战法 · 研究与执行终端 v5.0 稳健偏进取 · ETH优选</p>
+        <p class="sub">狙击手战法 · 智能战术助手 v3.0</p>
       </div>
     </div>
     <div class="status-strip">
@@ -377,17 +347,6 @@
       <span id="cooldownText">冷静期状态：正常</span>
     </div>
   </header>
-
-  <section class="command-dashboard" aria-label="指挥仪表盘">
-    <div class="command-card primary">
-      <div class="eyebrow">COMMAND GATE · 正式信号仅使用已收盘K线</div>
-      <div class="big state-warn" id="dashGate">等待拉取市场数据</div>
-      <div class="meta" id="dashGateMeta">点击“拉取行情”，再生成作战指令。未验证阶段仅供虚拟跟踪。</div>
-    </div>
-    <div class="command-card"><div class="eyebrow">MARKET STRUCTURE</div><div class="big" id="dashStructure">未扫描</div><div class="meta" id="dashStructureMeta">BTCUSDT · 1小时</div></div>
-    <div class="command-card"><div class="eyebrow">DATA INTEGRITY</div><div class="big state-warn" id="dashData">未同步</div><div class="meta" id="dashDataMeta">数据源：币安公开行情</div></div>
-    <div class="command-card"><div class="eyebrow">RISK BUDGET</div><div class="big" id="dashRisk">10.00 USDT</div><div class="meta" id="dashRiskMeta">账户 1,000 USDT · 单笔风险 1.00%</div></div>
-  </section>
 
   <div class="grid">
     <!-- LEFT: INPUT -->
@@ -399,8 +358,8 @@
           <div class="field">
             <label for="symbolInput">交易币种</label>
             <select id="symbolInput">
-              <option value="BTC-USDT">BTC/USDT</option>
-              <option value="ETH-USDT" selected>ETH/USDT</option>
+              <option value="BTC-USDT" selected>BTC/USDT</option>
+              <option value="ETH-USDT">ETH/USDT</option>
               <option value="SOL-USDT">SOL/USDT</option>
               <option value="BNB-USDT">BNB/USDT</option>
               <option value="XRP-USDT">XRP/USDT</option>
@@ -455,23 +414,14 @@
         <div class="sublabel">判定容差</div>
         <div class="row2">
           <div class="field">
-            <label for="tolerance">关键位容差 % (v5.0 1.5%)</label>
-            <input type="number" id="tolerance" step="0.1" value="1.5">
+            <label for="tolerance">关键位容差 %</label>
+            <input type="number" id="tolerance" step="0.1" value="2">
           </div>
           <div class="field">
-            <label for="stopbuf">止损缓冲 % (v5.0 1.2%)</label>
-            <input type="number" id="stopbuf" step="0.1" value="1.2">
+            <label for="stopbuf">止损缓冲 %</label>
+            <input type="number" id="stopbuf" step="0.1" value="1.5">
           </div>
         </div>
-
-        <div class="divider"></div>
-        <div class="sublabel">账户与风险预算（用于计算虚拟计划）</div>
-        <div class="row2">
-          <div class="field"><label for="accountSize">研究账户（USDT）</label><input type="number" id="accountSize" min="1" step="1" value="1000"></div>
-          <div class="field"><label for="riskPct">单笔止损风险 % (v5.0 1.5%)</label><input type="number" id="riskPct" min="0.1" max="2" step="0.1" value="1.5"></div>
-        </div>
-        <div class="field"><label for="leverage">计划杠杆上限 (v5.0 4x)</label><input type="number" id="leverage" min="1" max="10" step="1" value="4"></div>
-        <div class="note" style="border:none;padding-top:0;margin-top:-2px;">风险预算 = 账户 × 风险% × 信号权重占比。系统按"入场价至止损价"的真实距离反推数量；杠杆不会放大这笔预设止损金额，只影响占用的保证金。信号权重越低（如"观察级"），实际冒的风险也会同比例调低，不再是固定不变的。</div>
 
         <div class="divider"></div>
         <div class="sublabel">确认层（交叉验证）</div>
@@ -521,16 +471,35 @@
         <div class="row2">
           <div class="field">
             <label for="macroRes">宏观阻力位（箱体顶/前高，选填）</label>
-            <input type="number" id="macroRes" step="any" placeholder="留空则不启用轻骑兵">
+            <input type="number" id="macroRes" step="any" placeholder="留空则不显示轻骑兵观察">
           </div>
           <div class="field">
             <label for="macroSupport">宏观支撑位（箱体底/前低，选填）</label>
-            <input type="number" id="macroSupport" step="any" placeholder="留空则不启用轻骑兵">
+            <input type="number" id="macroSupport" step="any" placeholder="留空则不显示轻骑兵观察">
           </div>
         </div>
 
+        <div class="divider"></div>
+        <div class="sublabel">账户与风险预算（补丁七 · 用于计算真实下单数量）</div>
+        <div class="row2">
+          <div class="field">
+            <label for="accountSize">研究账户（USDT）</label>
+            <input type="number" id="accountSize" min="1" step="1" value="1000">
+          </div>
+          <div class="field">
+            <label for="riskPct">单笔止损风险 %</label>
+            <input type="number" id="riskPct" min="0.1" max="2" step="0.1" value="1">
+          </div>
+        </div>
+        <div class="field">
+          <label for="leverage">计划杠杆上限（仅计算保证金占用）</label>
+          <input type="number" id="leverage" min="1" max="10" step="1" value="3">
+        </div>
+        <div class="note" style="border:none;padding-top:0;margin-top:-2px;">风险预算 = 账户 × 风险% × 信号权重占比。系统按"入场价至止损价"的真实距离反推数量；杠杆不会放大这笔预设止损金额，只影响占用的保证金。</div>
+
         <button class="btn-primary" id="analyzeBtn">生成作战指令</button>
       </div>
+
     </div>
 
     <!-- RIGHT: OUTPUT -->
@@ -555,11 +524,6 @@
           </div>
         </div>
         <div class="note" id="jReadout">等待输入…</div>
-        <div class="strategy-deck" id="strategyDeck">
-          <div class="strategy-chip" id="chipT1"><div class="name">T1 · 隧道回踩</div><div class="status">等待结构扫描</div></div>
-          <div class="strategy-chip" id="chipT2"><div class="name">T2 · 宏观突破</div><div class="status">等待结构扫描</div></div>
-          <div class="strategy-chip" id="chipT3"><div class="name">T3 · 极端反转</div><div class="status">研究观察，非执行优先</div></div>
-        </div>
       </div>
 
       <div class="panel">
@@ -598,17 +562,10 @@
     <button class="btn-small btn-danger" id="resetAllBtn" style="margin-top:8px;">清空全部日志数据</button>
   </div>
 
-  <section class="panel" id="ledgerPanel">
-    <div class="ledger-head"><h2 style="margin:0;border:0;padding:0;"><span class="idx">05</span> 规则模拟盘 <span style="font-size:11px;color:var(--text-dim);font-weight:500;">仅运行 T1 · 趋势隧道回踩</span></h2><button class="btn-small btn-danger" id="clearJournalBtn">清空账本</button></div>
-    <div class="ledger-metrics" id="ledgerMetrics"></div>
-    <div id="journalList"><p class="empty-hint">还没有虚拟计划。仅当 T1 满足规则时，才可从作战指令冻结一笔计划。</p></div>
-    <p class="note">模拟规则：信号后自动生成限价挂单；每次拉取行情时，系统只用新收盘的 1小时K线判定成交、止损或止盈。挂单超过 6 根K线未成交自动失效；同一根K线同时触发止损和止盈时，按止损优先。</p>
-  </section>
-
   <footer class="disclaimer">
     本终端所有判断基于技术结构推演，不构成投资建议。历史价格形态不保证未来重演，指挥官需保留独立判断并自行承担决策后果。<br>
     冷静期计数与关键位日志仅保存在你本机的账号下，不对外可见。<br>
-    v5.0 稳健偏进取为手动研究模式：默认ETH 1H，容差1.5%止损1.2% ATR50 ER0.25 风险1.5%杠杆4x，已同步机器人；仅点击拉取后读取行情，不连接交易所、不下单。
+    本工具为手动触发模式：需要你打开页面并点击按钮才会取数、计算、提示，不会在后台常驻监控或主动推送消息（v3.0补丁四暂未实现）。
   </footer>
 
 </div>
@@ -629,24 +586,19 @@ function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
 // ---------- Storage helpers ----------
 async function storageGet(key, fallback){
   try{
-    if(window.storage?.get){ const r = await window.storage.get(key, false); return r ? JSON.parse(r.value) : fallback; }
-    const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback;
+    const r = await window.storage.get(key, false);
+    return r ? JSON.parse(r.value) : fallback;
   }catch(e){ return fallback; }
 }
 async function storageSet(key, value){
-  try{
-    if(window.storage?.set) await window.storage.set(key, JSON.stringify(value), false);
-    else localStorage.setItem(key, JSON.stringify(value));
-  }catch(e){ console.error('storage set failed', e); }
+  try{ await window.storage.set(key, JSON.stringify(value), false); }catch(e){ console.error('storage set failed', e); }
 }
 async function storageDelete(key){
-  try{ if(window.storage?.delete) await window.storage.delete(key, false); else localStorage.removeItem(key); }catch(e){ /* ignore */ }
+  try{ await window.storage.delete(key, false); }catch(e){ /* ignore */ }
 }
 
 let cooldownCount = 0;
 let levelLog = []; // [{id, label, tests}]
-let virtualJournal = []; // T1 paper orders; local-only research evidence
-let latestMarket = null;
 
 // ---------- Depth Gauge (SVG) ----------
 function renderDepthGauge(price, ema144, ema169, ema12){
@@ -753,10 +705,9 @@ function barToMs(bar){
 }
 
 async function fetchKlines(symbol, interval, limit){
-  // v4.3：数据源换成OKX（跟你实际下单的交易所保持一致）。
-  // OKX的limit上限是300一次，超过这个数也拿不到更多；instId是"BTC-USDT"这种带横杠的格式；
-  // 返回顺序不保证是时间正序，这里强制按时间戳重新排一遍，不依赖接口自己的顺序。
-  // OKX也没有单独的"收盘时间"字段，用 开盘时间+周期时长 换算出一个等价值。
+  // v3.2：数据源换成OKX（跟机器人、跟你实际下单的交易所保持一致）。
+  // OKX单次接口上限300根，instId是"BTC-USDT"这种带横杠的格式，
+  // 返回顺序不保证时间正序，这里强制按时间戳重新排一遍。
   const cappedLimit = Math.min(limit, 300);
   const url = `https://www.okx.com/api/v5/market/candles?instId=${symbol}&bar=${interval}&limit=${cappedLimit}`;
   const res = await fetch(url);
@@ -766,15 +717,11 @@ async function fetchKlines(symbol, interval, limit){
   const data = payload.data;
   if(!Array.isArray(data) || data.length === 0) throw new Error('未返回有效K线数据（交易对或周期可能不正确）');
   data.sort((a,b) => Number(a[0]) - Number(b[0]));
-  const barMs = barToMs(interval);
   return {
     closes: data.map(k => parseFloat(k[4])),
     highs: data.map(k => parseFloat(k[2])),
     lows: data.map(k => parseFloat(k[3])),
     vols: data.map(k => parseFloat(k[5])),
-    opens: data.map(k => parseFloat(k[1])),
-    openTimes: data.map(k => Number(k[0])),
-    closeTimes: data.map(k => Number(k[0]) + barMs),
   };
 }
 
@@ -841,9 +788,7 @@ async function runAutoFetch(){
   statusEl.textContent = `正在拉取 ${symbol} / ${interval} 行情…`;
 
   try{
-    const primaryRaw = await fetchKlines(symbol, interval, 300);
-    // 最后一根K线尚未收盘，禁止用于正式策略判断，避免盘中信号消失。
-    const primary = Object.fromEntries(Object.entries(primaryRaw).map(([k,v]) => [k, v.slice(0, -1)]));
+    const primary = await fetchKlines(symbol, interval, 300);
     if(primary.closes.length < 170){
       statusEl.textContent = `警告：仅获取到 ${primary.closes.length} 根K线，EMA169 冷启动偏差可能较大，仅供参考。`;
     }
@@ -885,8 +830,7 @@ async function runAutoFetch(){
     const higherInterval = HIGHER_TF[interval];
     if(higherInterval){
       try{
-        const higherRaw = await fetchKlines(symbol, higherInterval, 300);
-        const higher = Object.fromEntries(Object.entries(higherRaw).map(([k,v]) => [k, v.slice(0, -1)]));
+        const higher = await fetchKlines(symbol, higherInterval, 300);
         const hEma144 = computeEMASeries(higher.closes, 144);
         const hEma169 = computeEMASeries(higher.closes, 169);
         const hLast = higher.closes.length - 1;
@@ -927,7 +871,7 @@ async function runAutoFetch(){
     const atrArr = computeATRSeries(primary.highs, primary.lows, primary.closes, 14);
     const atrPct = atrPercentile(atrArr, 100);
     if(atrPct !== null){
-      const volStateAuto = atrPct <= 50 ? 'low' : 'normal'; // v5.0 50%
+      const volStateAuto = atrPct <= 20 ? 'low' : 'normal';
       document.getElementById('volState').value = volStateAuto;
       atrNote = `ATR历史分位：约第 ${atrPct.toFixed(0)} 百分位 → 自动判定波动率状态为「${volStateAuto==='low' ? '历史低位（熔断）' : '正常'}」（可手动改）。`;
     }
@@ -936,7 +880,7 @@ async function runAutoFetch(){
     let erNote = 'ER：数据不足，未自动判定。';
     const erVal = efficiencyRatio(primary.closes, 10);
     if(erVal !== null){
-      const trendStateAuto = erVal < 0.25 ? 'low' : 'normal'; // v5.0 0.25
+      const trendStateAuto = erVal < 0.3 ? 'low' : 'normal';
       document.getElementById('trendState').value = trendStateAuto;
       erNote = `趋势效率比：${erVal.toFixed(2)} → 自动判定为「${trendStateAuto==='low' ? '效率不足（横盘绞肉）' : '正常'}」（可手动改）。`;
     }
@@ -968,25 +912,22 @@ async function runAutoFetch(){
           const askNotional = book.asks
             .filter(a => parseFloat(a[0]) <= price*(1+band))
             .reduce((s,a) => s + parseFloat(a[0])*parseFloat(a[1]), 0);
-        if(bidNotional > 0 && askNotional > 0){
-          const ratio = bidNotional / askNotional;
-          if(ratio < 0.4){
-            liquidityNote = ` ⚠ 订单薄快照：现价±0.5%内买盘明显薄于卖盘（比值${ratio.toFixed(2)}），若持有多头，止损滑点风险偏高（单次快照，非实时监控）。`;
-          } else if(ratio > 2.5){
-            liquidityNote = ` ⚠ 订单薄快照：现价±0.5%内卖盘明显薄于买盘（比值${ratio.toFixed(2)}），若持有空头，止损滑点风险偏高（单次快照，非实时监控）。`;
-          } else {
-            liquidityNote = ` 订单薄快照：现价附近买卖盘深度大致均衡（比值${ratio.toFixed(2)}）。`;
+          if(bidNotional > 0 && askNotional > 0){
+            const ratio = bidNotional / askNotional;
+            if(ratio < 0.4){
+              liquidityNote = ` ⚠ 订单薄快照：现价±0.5%内买盘明显薄于卖盘（比值${ratio.toFixed(2)}），若持有多头，止损滑点风险偏高（单次快照，非实时监控）。`;
+            } else if(ratio > 2.5){
+              liquidityNote = ` ⚠ 订单薄快照：现价±0.5%内卖盘明显薄于买盘（比值${ratio.toFixed(2)}），若持有空头，止损滑点风险偏高（单次快照，非实时监控）。`;
+            } else {
+              liquidityNote = ` 订单薄快照：现价附近买卖盘深度大致均衡（比值${ratio.toFixed(2)}）。`;
+            }
           }
-        }
         }
       }
     }catch(e){ /* liquidity snapshot is optional, ignore failures silently */ }
 
-    latestMarket = { symbol, interval, closeTime: primary.closeTimes[primary.closeTimes.length-1] };
-    const paperEvents = await runPaperEngine(symbol, interval, primary);
-    const paperNote = paperEvents.length ? `<br><strong style="color:var(--amber)">模拟盘：${paperEvents.join('；')}</strong>` : '';
     const now = new Date().toLocaleTimeString('zh-CN');
-    statusEl.innerHTML = `[${now}] ${symbol} / ${interval} 取数完成（已剔除未收盘K线），已自动填入战场参数。${paperNote}<br>${volNote}<br>${mtfNote}${fundNote}<br>${atrNote}<br>${erNote}${macroNote}<br>${liquidityNote}<br>提醒：自动测算基于近300根K线（OKX单次接口上限），仍建议人工核对隧道位置与宏观关键位是否与你的图表一致。`;
+    statusEl.innerHTML = `[${now}] ${symbol} / ${interval} 取数完成，已自动填入战场参数。<br>${volNote}<br>${mtfNote}${fundNote}<br>${atrNote}<br>${erNote}${macroNote}<br>${liquidityNote}<br>提醒：自动测算基于近300根K线（OKX单次接口上限），仍建议人工核对隧道位置与宏观关键位是否与你的图表一致。`;
 
   }catch(err){
     statusEl.innerHTML = `联网取数失败：${err.message}。<br>这通常是因为当前网页环境（Claude.ai 内嵌沙盒）限制了对外部接口的直接访问。可尝试：将本文件下载后在浏览器中直接打开重试；或改用下方手动录入。`;
@@ -999,7 +940,7 @@ document.getElementById('fetchBtn').addEventListener('click', runAutoFetch);
 
 // ---------- Core Analysis (v3.0：ATR熔断 + 轻骑兵) ----------
 function analyze(inputs){
-  const { price, ema144, ema169, ema12, j, tolerance, stopBuf, vol, mtf, fund, cooldownActive, volState, trendState, macroRes, macroSupport, accountSize=1000, riskPct=1, leverage=3 } = inputs;
+  const { price, ema144, ema169, ema12, j, tolerance, stopBuf, vol, mtf, fund, cooldownActive, volState, trendState, macroRes, macroSupport, accountSize, riskPct, leverage } = inputs;
   const tunnelHigh = Math.max(ema144, ema169);
   const tunnelLow = Math.min(ema144, ema169);
 
@@ -1055,6 +996,27 @@ function analyze(inputs){
   const isBreakout = opportunity && (opportunity.kind==='breakout_long' || opportunity.kind==='breakout_short');
   const isPullback = opportunity && (opportunity.kind==='long' || opportunity.kind==='short');
 
+  // ---- v3.2 补丁六：T1-only 执行门槛 ----
+  // 172天回测实测：long_extreme/short_extreme合计7笔仅14%胜率、净亏4.03R——
+  // 这是"验证过效果差"，不是"没验证过"。轻骑兵至今20次以上触发，因为没有
+  // 正式止盈规则，一次都无法计算胜负——完全无法验证。只有T1（顺势隧道回踩）
+  // 允许生成可执行的入场/止损/止盈/仓位，T2/T3一律降级为仅观察记录。
+  if(opportunity && !isPullback){
+    const kindLabel = {
+      'long_extreme':'T3·极端恐慌接多', 'short_extreme':'T3·极端狂热摸顶',
+      'breakout_long':'T2·轻骑兵突破(做多)', 'breakout_short':'T2·轻骑兵突破(做空)',
+    }[opportunity.kind];
+    const reasonSuffix = isBreakout
+      ? '该战术至今没有可验证的历史胜率（缺乏正式止盈规则）'
+      : '历史回测显示该类信号胜率不足（172天样本7笔仅14%胜率，净亏4.03R）';
+    result0.signalLevel = `${kindLabel}（仅观察）`;
+    result0.signalClass = 'warn';
+    result0.totalScore = 0;
+    result0.abandonReason = `${kindLabel}：${opportunity.reason}。${reasonSuffix}，仅记录观察，不生成执行计划。`;
+    result0.nextWatch = '继续观察，T1（顺势隧道回踩）才是当前允许执行的策略';
+    return result0;
+  }
+
   // ---- 补丁五：趋势效率过滤（只作用于隧道结构性回踩/反弹，不影响轻骑兵/极端反转）----
   if(isPullback && trendState === 'low'){
     result0.opportunity = null;
@@ -1065,18 +1027,8 @@ function analyze(inputs){
     return result0;
   }
 
-  // v4.1 产品取舍：只有 T1（顺势隧道回踩）可以执行；突破和极端反转保留为观察，不能生成计划。
-  if(opportunity && !isPullback){
-    const observed = opportunity.kind.startsWith('breakout') ? 'T2 宏观突破' : 'T3 极端反转';
-    result0.observedKind = opportunity.kind;
-    result0.signalLevel = `${observed}：仅观察`;
-    result0.signalClass = 'warn';
-    result0.abandonReason = `${observed} 尚未完成独立回测与样本外验证，因此本版本禁止生成虚拟执行计划。`;
-    result0.nextWatch = '继续记录市场表现；当前只执行 T1 趋势隧道回踩。';
-    return result0;
-  }
-
-  const resonance = opportunity && !isBreakout && (
+  // 走到这里，opportunity 只可能是 long/short（T1-only门槛已经拦截了其他情况）
+  const resonance = opportunity && (
     (opportunity.kind==='long' && jStatus==='fear') ||
     (opportunity.kind==='short' && jStatus==='greed')
   );
@@ -1084,8 +1036,7 @@ function analyze(inputs){
   const totalScore = confirmScore + bonus;
 
   let signalLevel, signalClass;
-  if(isBreakout){ signalLevel = '轻骑兵试探（固定小仓位）'; signalClass = 'warn'; }
-  else if(totalScore >= 2){ signalLevel = '有效信号'; signalClass='ok'; }
+  if(totalScore >= 2){ signalLevel = '有效信号'; signalClass='ok'; }
   else if(totalScore === 1){ signalLevel = '观察级（仓位减半）'; signalClass='warn'; }
   else { signalLevel = '信号不足（建议放弃）'; signalClass='bad'; }
 
@@ -1098,7 +1049,7 @@ function analyze(inputs){
     return result;
   }
 
-  if(!isBreakout && totalScore === 0){
+  if(totalScore === 0){
     result.abandonReason = '成交量与多周期确认均未通过，信号不足，按纪律放弃。';
     result.nextWatch = `继续观察 ${fmt(tunnelLow)} - ${fmt(tunnelHigh)} 区间是否出现放量确认`;
     return result;
@@ -1106,6 +1057,7 @@ function analyze(inputs){
 
   let entryLow, entryHigh, stopPrice, targetNear, targetFar, direction, positionBase;
 
+  // T1-only门槛已经把其他kind拦在前面了，这里只可能是 long 或 short
   if(opportunity.kind === 'long'){
     entryLow = tunnelLow * (1 - tolerance/100*0.3);
     entryHigh = tunnelHigh * (1 + tolerance/100*0.3);
@@ -1117,7 +1069,7 @@ function analyze(inputs){
     direction = '做多 LONG';
     positionBase = resonance ? 40 : 30;
     result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
-  } else if(opportunity.kind === 'short'){
+  } else { // short
     entryLow = tunnelLow * (1 - tolerance/100*0.3);
     entryHigh = tunnelHigh * (1 + tolerance/100*0.3);
     stopPrice = tunnelHigh * (1 + stopBuf/100);
@@ -1127,50 +1079,6 @@ function analyze(inputs){
     targetFar = entryMid - risk*2.5;
     direction = '做空 SHORT';
     positionBase = resonance ? 40 : 30;
-    result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
-  } else if(opportunity.kind === 'long_extreme'){
-    entryLow = price * (1 - tolerance/100*0.3);
-    entryHigh = price * (1 + tolerance/100*0.3);
-    stopPrice = price * (1 - stopBuf/100*1.5);
-    const entryMid = (entryLow+entryHigh)/2;
-    const risk = entryMid - stopPrice;
-    targetNear = ema12;
-    targetFar = ema12;
-    direction = '做多 LONG（极端接飞刀）';
-    positionBase = 15;
-    result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
-  } else if(opportunity.kind === 'short_extreme'){
-    entryLow = price * (1 - tolerance/100*0.3);
-    entryHigh = price * (1 + tolerance/100*0.3);
-    stopPrice = price * (1 + stopBuf/100*1.5);
-    const entryMid = (entryLow+entryHigh)/2;
-    const risk = stopPrice - entryMid;
-    targetNear = ema12;
-    targetFar = ema12;
-    direction = '做空 SHORT（极端摸顶）';
-    positionBase = 15;
-    result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
-  } else if(opportunity.kind === 'breakout_long'){
-    entryLow = price * (1 - 0.15/100);
-    entryHigh = price * (1 + 0.5/100);
-    stopPrice = macroRes * (1 - stopBuf/100);
-    const entryMid = (entryLow+entryHigh)/2;
-    const risk = entryMid - stopPrice;
-    targetNear = entryMid + risk*2;
-    targetFar = entryMid + risk*3.5;
-    direction = '做多 LONG（轻骑兵突破追单）';
-    positionBase = bonus ? 1 : 0.5;
-    result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
-  } else {
-    entryLow = price * (1 - 0.5/100);
-    entryHigh = price * (1 + 0.15/100);
-    stopPrice = macroSupport * (1 + stopBuf/100);
-    const entryMid = (entryLow+entryHigh)/2;
-    const risk = stopPrice - entryMid;
-    targetNear = entryMid - risk*2;
-    targetFar = entryMid - risk*3.5;
-    direction = '做空 SHORT（轻骑兵破位追单）';
-    positionBase = bonus ? 1 : 0.5;
     result._entryMid = entryMid; result._risk = risk; result._targetForRR = targetNear;
   }
 
@@ -1186,13 +1094,13 @@ function analyze(inputs){
   }
 
   let position = positionBase;
-  if(!isBreakout && signalLevel.indexOf('观察级') !== -1) position = position / 2;
+  if(signalLevel.indexOf('观察级') !== -1) position = position / 2;
   let forcedZero = false;
   if(cooldownActive){ position = 0; forcedZero = true; }
-  // v4.2 修复：position（信号权重）此前只是个显示标签，从未真正影响下面的风险预算——
-  // 无论"有效信号+共振"(40%)还是"观察级减半"(15%)，算出来的下单数量完全一样，
-  // 仓位分级形同虚设。现在把position换算成"占riskPct上限的比例"，让信号质量
-  // 真正决定这一笔该冒多少钱的风险，而不只是显示一个不影响任何计算的数字。
+
+  // ---- v3.2 补丁七：美元风险预算仓位（跟狙击战术v4.2手动工具、机器人是同一套算法）----
+  // position(15/30/40信号权重) 换算成"占riskPct上限的比例"，让信号质量真正决定
+  // 这一笔该冒多少钱的风险，而不是一个只用来显示、不参与计算的标签。
   const POSITION_TIER_MAX = 40; // T1顺势回踩+共振时的满额权重，作为100%风险预算的基准
   const riskFraction = forcedZero ? 0 : Math.min(position / POSITION_TIER_MAX, 1);
   const riskBudget = accountSize * riskPct / 100 * riskFraction;
@@ -1202,40 +1110,13 @@ function analyze(inputs){
   const effectiveRiskPct = riskPct * riskFraction;
 
   result.opportunity = {
-    kind: opportunity.kind, strategy:'T1 · 趋势隧道回踩', reason: opportunity.reason, direction, isBreakout,
+    kind: opportunity.kind, reason: opportunity.reason, direction,
     entryLow, entryHigh, stopPrice, targetNear, targetFar,
-    rr, position, forcedZero, riskBudget, quantity, notional, margin, leverage, accountSize, riskPct, riskFraction, effectiveRiskPct
+    rr, position, forcedZero,
+    riskFraction, riskBudget, quantity, notional, margin, effectiveRiskPct,
+    leverage, accountSize, riskPct,
   };
   return result;
-}
-
-// ---------- v4 Command dashboard ----------
-function setChip(id, label, state){
-  const el = document.getElementById(id); if(!el) return;
-  el.className = 'strategy-chip ' + (state || '');
-  el.querySelector('.status').textContent = label;
-}
-function updateDashboard(r, ctx){
-  const gate = document.getElementById('dashGate'), gateMeta = document.getElementById('dashGateMeta');
-  const structure = document.getElementById('dashStructure'), structureMeta = document.getElementById('dashStructureMeta');
-  const data = document.getElementById('dashData'), dataMeta = document.getElementById('dashDataMeta');
-  const risk = document.getElementById('dashRisk'), riskMeta = document.getElementById('dashRiskMeta');
-  const canTrade = !!r.opportunity && !r.opportunity.forcedZero;
-  gate.className = 'big ' + (canTrade ? 'state-good' : r.signalClass==='bad' ? 'state-bad' : 'state-warn');
-  gate.textContent = canTrade ? '允许建立虚拟计划' : '维持空仓 / 等待';
-  gateMeta.textContent = r.abandonReason || r.nextWatch || r.signalLevel;
-  structure.textContent = r.structureType==='bull' ? '多头结构' : r.structureType==='bear' ? '空头结构' : '隧道内部';
-  structure.className = 'big ' + (r.structureType==='inside' ? 'state-warn' : r.structureType==='bull' ? 'state-good' : 'state-bad');
-  structureMeta.textContent = `${ctx.symbol} · ${ctx.interval} · ${r.structureLabel}`;
-  data.className = 'big state-good'; data.textContent = '已封存 · 收盘K线';
-  dataMeta.textContent = '最后一根未收盘K线已排除；请在每小时收盘后刷新。';
-  const budget = ctx.accountSize * ctx.riskPct / 100;
-  risk.textContent = `${fmt(budget)} USDT`;
-  riskMeta.textContent = `账户 ${fmt(ctx.accountSize)} USDT · 单笔风险 ${ctx.riskPct.toFixed(2)}%`;
-  const k = r.opportunity?.kind || r.observedKind || '';
-  setChip('chipT1', k==='long'||k==='short' ? '当前候选 · 需虚拟跟踪' : '等待顺势回踩结构', k==='long'||k==='short' ? 'active' : '');
-  setChip('chipT2', k.startsWith('breakout') ? '当前候选 · 小风险试探' : '等待关键位突破', k.startsWith('breakout') ? 'active' : '');
-  setChip('chipT3', k.includes('extreme') ? '仅研究观察，不建议执行' : '研究观察，非执行优先', k.includes('extreme') ? 'blocked' : '');
 }
 
 // ---------- Render Result ----------
@@ -1267,106 +1148,30 @@ function renderResult(r, cooldownActive){
     const o = r.opportunity;
     html += `<div class="result-card">
       <h3>作战指令 — ${o.direction}</h3>
-      ${o.isBreakout ? '<span class="badge warn" style="margin-bottom:10px; display:inline-block;">轻骑兵战术 · 特例允许市价</span>' : ''}
       <p style="font-size:12px; color:var(--text-muted); margin:0 0 10px;">触发理由：${o.reason}</p>
       <div class="result-grid">
-        <div class="stat"><div class="k">${o.isBreakout ? '追入区间（市价容忍带）' : '入场区间'}</div><div class="v neu">${fmt(o.entryLow)} ~ ${fmt(o.entryHigh)}</div></div>
+        <div class="stat"><div class="k">入场区间</div><div class="v neu">${fmt(o.entryLow)} ~ ${fmt(o.entryHigh)}</div></div>
         <div class="stat"><div class="k">铁血止损位</div><div class="v neg">${fmt(o.stopPrice)}</div></div>
-        <div class="stat"><div class="k">${o.isBreakout ? '止盈近目标' : '止盈近目标（EMA12/首目标）'}</div><div class="v pos">${fmt(o.targetNear)}</div></div>
+        <div class="stat"><div class="k">止盈近目标（EMA12/首目标）</div><div class="v pos">${fmt(o.targetNear)}</div></div>
         <div class="stat"><div class="k">止盈远目标</div><div class="v pos">${fmt(o.targetFar)}</div></div>
         <div class="stat"><div class="k">盈亏比</div><div class="v ${o.rr>=1.5?'pos':'neg'}">${o.rr.toFixed(2)} : 1</div></div>
         <div class="stat"><div class="k">策略等级</div><div class="v neu">${o.forcedZero ? '锁定（冷静期）' : o.position + '% 信号权重 → 实际风险 ' + o.effectiveRiskPct.toFixed(2) + '%'}</div></div>
       </div>
-      <div class="risk-mini">
+      <div class="result-grid" style="margin-top:14px;">
         <div><div class="r-k">最大止损金额</div><div class="r-v">${o.forcedZero ? '0.00' : fmt(o.riskBudget)} USDT</div></div>
+        <div><div class="r-k">建议数量</div><div class="r-v">${o.forcedZero ? '0.00' : fmt(o.quantity)}</div></div>
         <div><div class="r-k">建议名义价值</div><div class="r-v">${o.forcedZero ? '0.00' : fmt(o.notional)} USDT</div></div>
         <div><div class="r-k">约需保证金（${o.leverage}x）</div><div class="r-v">${o.forcedZero ? '0.00' : fmt(o.margin)} USDT</div></div>
       </div>
-      ${!o.forcedZero ? `<button class="btn-primary btn-ledger" id="createVirtualPlanBtn" style="margin-top:14px;">生成 T1 模拟限价挂单</button>` : ''}
       <p class="note">
-        ${o.isBreakout
-          ? '本次为轻骑兵试探，系统唯一允许市价直接追入的场景，仓位已强制压缩至0.5%-1%。跌破止损位无条件离场；若后续价格回踩隧道确认，可再按标准仓位规则加仓「重兵」。'
-          : '限价挂单执行，禁止市价追单。跌破止损位无条件离场，不扛单、不加仓摊平。'}<br>
+        限价挂单执行，禁止市价追单。跌破止损位无条件离场，不扛单、不加仓摊平。<br>
         若该关键位在下方【战场日志】中已记录 ≥ 3 次测试，请自动降级为观察，本次不建议开新仓。
       </p>
     </div>`;
   }
 
   area.innerHTML = html;
-  const planBtn = document.getElementById('createVirtualPlanBtn');
-  if(planBtn && r.opportunity){
-    planBtn.addEventListener('click', () => createVirtualPlan(r.opportunity));
-  }
 }
-
-// ---------- v4.2 Rules-based paper trading engine ----------
-// Candle-level model only: it does not claim tick-by-tick fills or exchange-grade matching.
-function calcJournalMetrics(){
-  const closed = virtualJournal.filter(t => t.status==='closed');
-  const pnl = closed.reduce((sum,t)=>sum+t.pnl,0);
-  const wins = closed.filter(t=>t.pnl>0);
-  const grossWin = wins.reduce((sum,t)=>sum+t.pnl,0);
-  const grossLoss = Math.abs(closed.filter(t=>t.pnl<0).reduce((sum,t)=>sum+t.pnl,0));
-  let equity=0, peak=0, maxDD=0;
-  closed.slice().sort((a,b)=>a.closedCandleTime-b.closedCandleTime).forEach(t=>{ equity+=t.pnl; peak=Math.max(peak,equity); maxDD=Math.max(maxDD,peak-equity); });
-  return {closed, pnl, winRate:closed.length?wins.length/closed.length*100:0, pf:grossLoss?grossWin/grossLoss:(grossWin?'∞':0), maxDD};
-}
-function renderJournal(){
-  const list=document.getElementById('journalList'), metrics=document.getElementById('ledgerMetrics');
-  const m=calcJournalMetrics();
-  metrics.innerHTML=[['已结算',m.closed.length+' 笔'],['胜率',m.closed.length?m.winRate.toFixed(1)+'%':'—'],['累计盈亏',(m.pnl>=0?'+':'')+fmt(m.pnl)+' U'],['盈利因子',m.closed.length?(m.pf==='∞'?'∞':m.pf.toFixed(2)):'—'],['最大回撤',fmt(m.maxDD)+' U']].map(([k,v])=>`<div class="ledger-metric"><div class="lm-k">${k}</div><div class="lm-v ${String(v).startsWith('-')?'neg':''}">${v}</div></div>`).join('');
-  if(!virtualJournal.length){ list.innerHTML='<p class="empty-hint">还没有模拟订单。T1 满足规则后，可从作战指令生成一笔模拟限价挂单。</p>'; return; }
-  list.innerHTML=virtualJournal.slice().reverse().map(t=>{
-    const stateMap={pending:['模拟限价挂单中','warn'],open:['模拟持仓中','warn'],closed:[t.pnl>=0?'模拟止盈结算':'模拟止损结算',t.pnl>=0?'ok':'bad'],expired:['挂单超时失效','bad'],cancelled:['已手动取消','bad']};
-    const [status,badge]=stateMap[t.status]||['未知','bad'];
-    const action=(t.status==='pending'||t.status==='open')?`<button class="btn-small btn-danger" data-action="cancel" data-id="${t.id}">取消模拟订单</button>`:'';
-    const outcome=t.status==='closed'?` ｜ ${(t.pnl>=0?'+':'')+fmt(t.pnl)} U · ${(t.rMultiple>=0?'+':'')+t.rMultiple.toFixed(2)}R`:'';
-    return `<div class="trade-card ${t.status==='closed'?'done':'open'}"><div class="trade-top"><span class="trade-title">${t.strategy} · ${t.direction}</span><span class="badge ${badge}">${status}</span></div><div class="trade-meta">信号时间 ${t.createdAt} ｜限价 ${fmt(t.entry)} ｜止损 ${fmt(t.stop)} ｜止盈 ${fmt(t.target)} ｜风险 ${fmt(t.riskBudget)} U<br>数量 ${fmt(t.quantity)} ${(t.symbol||'').split('-')[0]||'币'} ｜ ${t.symbol} / ${t.interval} ｜有效期 ${t.expiryBars} 根K线${outcome}</div><div class="trade-actions">${action}</div></div>`;
-  }).join('');
-  list.querySelectorAll('[data-action="cancel"]').forEach(btn=>btn.addEventListener('click',async()=>{const t=virtualJournal.find(x=>x.id===btn.dataset.id);if(!t)return;t.status='cancelled';await storageSet('virtual-journal',virtualJournal);renderJournal();}));
-}
-async function runPaperEngine(symbol, interval, candles){
-  const events=[];
-  const working=virtualJournal.filter(t=>(t.status==='pending'||t.status==='open')&&t.symbol===symbol&&t.interval===interval);
-  if(!working.length) return events;
-  for(const t of working){
-    const bars=[];
-    for(let i=0;i<candles.closeTimes.length;i++) if(candles.closeTimes[i]>t.createdCandleTime && candles.closeTimes[i]>(t.lastProcessedCloseTime||t.createdCandleTime)) bars.push({high:candles.highs[i],low:candles.lows[i],closeTime:candles.closeTimes[i]});
-    for(const bar of bars){
-      if(t.status==='pending'){
-        t.barsWaited=(t.barsWaited||0)+1;
-        if(bar.low<=t.entry && bar.high>=t.entry){ t.status='open';t.filledCandleTime=bar.closeTime;events.push('模拟限价单已成交'); }
-        else if(t.barsWaited>=t.expiryBars){ t.status='expired';events.push('一笔模拟挂单已超时失效'); }
-      }
-      if(t.status==='open'){
-        const stopHit=t.isLong?bar.low<=t.stop:bar.high>=t.stop;
-        const targetHit=t.isLong?bar.high>=t.target:bar.low<=t.target;
-        // OHLC cannot establish the intrabar path. When both are possible, stop-first is deliberately conservative.
-        if(stopHit || targetHit){
-          const exit=stopHit?t.stop:t.target;
-          t.exit=exit;t.status='closed';t.closedCandleTime=bar.closeTime;t.exitReason=stopHit?(targetHit?'同K线双触发，保守按止损':'止损'):'止盈';
-          t.pnl=(t.isLong?(exit-t.entry):(t.entry-exit))*t.quantity;
-          t.rMultiple=t.riskBudget?t.pnl/t.riskBudget:0;
-          events.push(`模拟订单${t.exitReason}结算（${t.rMultiple>=0?'+':''}${t.rMultiple.toFixed(2)}R）`);
-        }
-      }
-      t.lastProcessedCloseTime=bar.closeTime;
-      if(t.status==='closed'||t.status==='expired') break;
-    }
-  }
-  if(events.length){await storageSet('virtual-journal',virtualJournal);renderJournal();}
-  return events;
-}
-async function createVirtualPlan(o){
-  if(!latestMarket){ alert('请先拉取行情，确保模拟订单绑定到一根已收盘K线。'); return; }
-  if(virtualJournal.some(t=>t.status==='pending'||t.status==='open')){ alert('已有一笔进行中的模拟订单。为保证研究样本清晰，请先等待其止盈、止损、失效或手动取消。'); return; }
-  const symbol=document.getElementById('symbolInput').value, interval=document.getElementById('intervalSelect').value;
-  if(symbol!==latestMarket.symbol||interval!==latestMarket.interval){alert('市场参数已变更，请重新拉取行情后再生成模拟挂单。');return;}
-  virtualJournal.push({id:'t1_'+Date.now(),strategy:'T1 · 趋势隧道回踩',direction:o.direction,symbol,interval,entry:(o.entryLow+o.entryHigh)/2,stop:o.stopPrice,target:o.targetNear,riskBudget:o.riskBudget,quantity:o.quantity,isLong:o.direction.includes('LONG'),status:'pending',expiryBars:6,barsWaited:0,createdCandleTime:latestMarket.closeTime,lastProcessedCloseTime:latestMarket.closeTime,createdAt:new Date().toLocaleString('zh-CN')});
-  await storageSet('virtual-journal',virtualJournal);renderJournal();
-  document.getElementById('ledgerPanel').scrollIntoView({behavior:'smooth',block:'start'});
-}
-document.getElementById('clearJournalBtn').addEventListener('click',async()=>{if(!confirm('确定清空全部模拟订单与历史结算？这会删除研究证据。'))return;virtualJournal=[];await storageDelete('virtual-journal');renderJournal();});
 
 // ---------- Wire up main analyze button ----------
 document.getElementById('analyzeBtn').addEventListener('click', () => {
@@ -1384,13 +1189,14 @@ document.getElementById('analyzeBtn').addEventListener('click', () => {
   const trendState = document.getElementById('trendState').value;
   const macroRes = parseFloat(document.getElementById('macroRes').value) || 0;
   const macroSupport = parseFloat(document.getElementById('macroSupport').value) || 0;
-  // v4.2 加固：HTML的min/max属性不是硬保证（手机键盘直接输入、脚本注入等都可能绕过），
-  // 风险相关的数值必须在JS层也钳制一次，这里才是真正决定下单数量的地方。
+
+  // v3.2 补丁七：HTML的min/max属性不是硬保证，风险相关数值在JS层也钳制一次，
+  // 这里才是真正决定下单数量的地方。
   const accountSize = Math.max(parseFloat(document.getElementById('accountSize').value) || 1000, 1);
   const riskPct = Math.min(Math.max(parseFloat(document.getElementById('riskPct').value) || 1, 0.1), 2);
   const leverage = Math.min(Math.max(parseFloat(document.getElementById('leverage').value) || 3, 1), 10);
 
-  if([price, ema144, ema169, ema12, j, accountSize, riskPct, leverage].some(v => isNaN(v) || v <= 0)){
+  if([price, ema144, ema169, ema12, j].some(v => isNaN(v))){
     document.getElementById('resultArea').innerHTML = '<p class="empty-hint" style="color:var(--red);">请检查左侧参数，所有数值字段均需填写。</p>';
     return;
   }
@@ -1401,7 +1207,6 @@ document.getElementById('analyzeBtn').addEventListener('click', () => {
   const cooldownActive = cooldownCount >= 2;
   const r = analyze({price, ema144, ema169, ema12, j, tolerance, stopBuf, vol, mtf, fund, cooldownActive, volState, trendState, macroRes, macroSupport, accountSize, riskPct, leverage});
   renderResult(r, cooldownActive);
-  updateDashboard(r, {symbol:document.getElementById('symbolInput').value, interval:document.getElementById('intervalSelect').value, accountSize, riskPct, fetched:true});
 });
 
 // ---------- Cooldown tracker ----------
@@ -1487,14 +1292,11 @@ document.getElementById('resetAllBtn').addEventListener('click', async () => {
 (async function init(){
   cooldownCount = await storageGet('cooldown-count', 0);
   levelLog = await storageGet('level-log', []);
-  virtualJournal = await storageGet('virtual-journal', []);
   renderCooldown();
   renderLevelLog();
-  renderJournal();
   // initial demo render
   renderDepthGauge(60250, 59800, 59600, 61200);
   renderJBar(8.5);
-  updateDashboard({structureType:'inside', structureLabel:'等待扫描', signalClass:'warn', signalLevel:'等待拉取', opportunity:null, nextWatch:'请拉取 BTC 1小时已收盘K线后生成计划。'}, {symbol:'BTCUSDT',interval:'1h',accountSize:1000,riskPct:1});
 })();
 </script>
 
@@ -1510,5 +1312,5 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   });
 }
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a23377e048b55937',t:'MTc4NTQwNTEyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
